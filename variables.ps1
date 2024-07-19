@@ -1,7 +1,7 @@
 ﻿#
 # simple script defining base variables
 #
-# Dietmar Stein, 07/2024, info@simracingjustfair.org
+# Stone, 07/2024, info@simracingjustfair.org
 #
 
 # where is rfactor 2 located (currently program files (x86) is not supported)
