@@ -12,3 +12,6 @@ $RF2WORKSHOPPKGS="$RF2ROOT\steamapps\workshop\content\365960"
 
 # a PREFIX for the filename
 $PREFIX="srjf-"
+
+# which profile to use by default
+$PROFILE="player"
