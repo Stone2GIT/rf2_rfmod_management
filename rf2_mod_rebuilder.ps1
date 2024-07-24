@@ -31,8 +31,9 @@ if (-not "$DATFILE") {
   write-host "Sorry, but we need a dat file at least given as argument or in appdata ..."
   timeout /t 10 | out-null
   exit 1
-} else {
- $CURRENTPACKAGE=((gc $DATFILE|select-string -Pattern "CurPackage") -split("=") | tail -n 1)
+ } else {
+  $CURRENTPACKAGE=((gc $DATFILE|select-string -Pattern "CurPackage") -split("=") | tail -n 1)
+ }
 }
 
 # filename of the rfmod file ...
