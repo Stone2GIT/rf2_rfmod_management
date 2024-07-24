@@ -13,19 +13,21 @@
 $CURRENTDATE=(Get-Date -Format "MMdd")
 $CURRENTLOCATION=((Get-Location).Path)
 
-# read args, but only the first one given for profile
-if ($args[0]) {
-     $PROFILE=$args[0]
-    } else {
-     $PROFILE=player
-    }
+# read in and identify args
+forEach ($ARGUMENT in $args) {
+ if ("($FILENAME | select-string '.dat')") {
+  $DATFILE=$ARGUMENT
+ } else {
+  $PROFILE=$ARGUMENT
+ }
+}
 
-if ($args[1]) {
-     $DATFILE=$args[1]
-    } else {
-     write-host "Sorry, but we need a dat file mentioned ..."
-     exit 1
-    }
+# without a given dat file we cannot do anything
+if (-not "$DATFILE") {
+ write-host "Sorry, but we need a dat file mentioned ..."
+ timeout /t 10 | out-null
+ exit 1
+}
 
 # filename of the rfmod file ...
 $RFMODFILENAME="$PREFIX"+"$PROFILE"+"$CURRENTDATE.rfmod"
@@ -41,24 +43,14 @@ move-item "All*_10.rfm" "default.rfm" -force
 move-item "All*smicon.dds" "smicon.dds" -force
 move-item "All*icon.dds" "icon.dds" -force
 
-# build mas file in appdata\roaming\~mastemp
-#
-#
 # build argument for modmgr
 $ARGUMENTS=" -m""$HOME\Appdata\roaming\~mastemp\$PREFIX$PROFILE.mas"" ""$CURRENTLOCATION\icon.dds"" ""$CURRENTLOCATION\smicon.dds"" ""$CURRENTLOCATION\default.rfm"" "
 
 # run modmgr to build mas file
 start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow  -Wait
-#
-#
-# end of build mas file in appdata\roaming\~mastemp
-
-# copy dummy.mas ... and copy the correct named mas file to MASTEMP
-#cp dummy.mas $PREFIX$PROFILE.mas
-#copy -v $PREFIX$PROFILE.mas $HOME\AppData\Roaming\~MASTEMP\$PREFIX$PROFILE".mas"
 
 # building mod package by using dat file and first entry in it
-$ARGUMENTS=" -c""$RF2ROOT"" -o""$RF2ROOT\Packages"" -b""$RF2ROOT\bmp\$DATFILE"" 0"
+$ARGUMENTS=" -c""$RF2ROOT"" -o""$RF2ROOT\Packages"" -b""$RF2ROOT\$DATFILE"" 0"
 start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
 
 # install mod package
@@ -74,4 +66,4 @@ $ARGUMENTS=" +profile=$PROFILE +rfm=$RFMFILENAME +oneclick"
 start-process -FilePath "$RF2ROOT\bin64\rFactor2 Dedicated.exe" -ArgumentList $ARGUMENTS -NoNewWindow
 
 # keep the window open to see error messages ...
-timeout /t 60
+timeout /t 60 | out-null
