@@ -20,6 +20,6 @@ PS1 files need to be opened with editor once in order to get rid of the signing 
 
 ### rf2_mod_builder
 
-4. run rf2_mod_builder with <profile> and <datfile> as argument, e.g. rf2_mod_builder.ps1 player sample.dat
+4. run rf2_mod_builder with \<profile\> and \<datfile\> as argument, e.g. rf2_mod_builder.ps1 player sample.dat
 
 ### rf2_mod_updater
