@@ -3,22 +3,31 @@
 #
 # Stone, 07/2024, info@simracingjustfair.org
 #
-# todo: run only if there has changed something
+# todo:
+# - we could choose to rebuild latest mod in pkginfo.dat if no dat filename is given
 
 . ./variables.ps1
-
-# read in rgs, but only the first one given
-if ($args[0]) {
-    $PROFILE=$args[0]
-    }
 
 # store the current date with month and day in numeric format
 $CURRENTDATE=(Get-Date -Format "MMdd")
 $CURRENTLOCATION=((Get-Location).Path)
 
-# filename of the dat file ...
-$PREFIX="srjf-"
-$DATFILE="$PREFIX"+"$PROFILE.dat"
+# read in and identify args
+forEach ($ARGUMENT in $args) {
+ if ("($FILENAME | select-string '.dat')") {
+  $DATFILE=$ARGUMENT
+ } else {
+  # if no profile is given as argument we will use default from variables.ps1
+  $PROFILE=$ARGUMENT
+ }
+}
+
+# without a given dat file we cannot do anything
+if (-not "$DATFILE") {
+ write-host "Sorry, but we need a dat file mentioned ..."
+ timeout /t 10 | out-null
+ exit 1
+}
 
 # the new rfmod file name for the updated one
 $RFMODFILENAME="$PREFIX"+"$PROFILE"+"$CURRENTDATE.rfmod"
