@@ -1,22 +1,27 @@
 ﻿#
-# simple script to build RFMODs
+# simple script to build RFMODs from dat files
 #
-# Dietmar Stein, 03/2024, info@simracingjustfair.org
+# Stone, 03/2024, info@simracingjustfair.org
 #
 
 . .\variables.ps1
 
-# read in profile name as args, but only the first one given
+# store the current date with month and day in numeric format
+$CURRENTDATE=(Get-Date -Format "MMdd")
+$CURRENTLOCATION=((Get-Location).Path)
+
+# read args, but only the first one given for profile
 if ($args[0]) {
     $PROFILE=$args[0]
     }
 
-# store the current date with month and day in numeric format
-$CURRENTDATE=(Get-Date -Format "MMdd")
-
-# filename of the dat file ...
-$PREFIX="srjf-"
-$DATFILE="$PREFIX"+"$PROFILE.dat"
+if ($args[1]) {
+     $DATFILE=$args[1]
+    } else {
+     # filename of the dat file ...
+     $PREFIX="srjf-"
+     $DATFILE="$PREFIX"+"$PROFILE.dat"
+    }
 
 # filename of the rfmod file ...
 $RFMODFILENAME="$PREFIX"+"$PROFILE"+"$CURRENTDATE.rfmod"
@@ -32,11 +37,6 @@ cd $RF2ROOT\bmp
 cp dummy.mas $PREFIX$PROFILE.mas
 copy -v $PREFIX$PROFILE.mas $HOME\AppData\Roaming\~MASTEMP\$PREFIX$PROFILE".mas"
 
-# not needed and not working (building a mas file for MASTEMP)
-#$ARGUMENTS=" -c""$RF2ROOT"" -o""$HOME\AppData\Roaming\~MASTEMP\"" -m""$PREFIX$PROFILE.mas"" ""$RF2ROOT\bmp\default.rfm"" ""$RF2ROOT\bmp\icon.dds"" ""$RF2ROOT\bmp\smicon.dds"""
-#& "RF2ROOT\bin64\modmgr.exe" -c""$RF2ROOT"" -o""$HOME\AppData\Roaming\~MASTEMP\"" -m""SRJF-$PROFILE.mas"" ""$RF2ROOT\bmp\default.rfm"" ""$RF2ROOT\bmp\icon.dds"" ""$RF2ROOT\bmp\smicon.dds""
-#start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
-
 # building mod package by using dat file and first entry in it
 $ARGUMENTS=" -c""$RF2ROOT"" -o""$RF2ROOT\Packages"" -b""$RF2ROOT\bmp\$DATFILE"" 0"
 start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
@@ -50,7 +50,6 @@ start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -No
 cd $RF2ROOT
 
 # start the mod ...
-#$ARGUMENTS=" +path="".."" +profile=$PROFILE +rfm=$RFMFILENAME +oneclick"
 $ARGUMENTS=" +profile=$PROFILE +rfm=$RFMFILENAME +oneclick"
 start-process -FilePath "$RF2ROOT\bin64\rFactor2 Dedicated.exe" -ArgumentList $ARGUMENTS -NoNewWindow
 
