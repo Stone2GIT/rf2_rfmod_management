@@ -3,6 +3,8 @@
 #
 # Stone, 03/2024, info@simracingjustfair.org
 #
+# todo:
+# - we could choose to rebuild latest mod in pkginfo.dat if no dat filename is given
 
 . .\variables.ps1
 
