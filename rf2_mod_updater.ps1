@@ -1,7 +1,7 @@
 ﻿#
 # simple script to update RFMODs by content
 #
-# Dietmar Stein, 07/2024, info@simracingjustfair.org
+# Stone, 07/2024, info@simracingjustfair.org
 #
 # todo: run only if there has changed something
 
@@ -26,7 +26,6 @@ $RFMODFILENAME="$PREFIX"+"$PROFILE"+"$CURRENTDATE.rfmod"
 (gc $DATFILE) -replace """^Version""=.*","""Version""=$CURRENTDATE" | set-content -Path "$DATFILE"
 
 # setting correct rfmod file location in dat file
-#(((gc $DATFILE |select-string -Pattern "^Location=") -split("="))[1])
 (gc $DATFILE) -replace """^Location""=.*","""Location""=$RF2ROOT\Packages\$RFMODFILENAME" | set-content -Path "$DATFILE"
 
 # read in whole dat file
@@ -68,6 +67,41 @@ ForEach($VEHICLESTRING in $VEHICLES) {
         #
         # we are replacing the installed version with the version found in dat file
         $DATFILECONTENT=($DATFILECONTENT -replace "$VEHICLEFOLDER v$VEHICLEVERSION","$VEHICLEFOLDER v$VEHICLEINSTALLEDVERSION")
+        }
+
+    }
+
+# get all track entries in dat file
+$TRACKS=(gc $DATFILE | select-string -Pattern 'Track=')
+
+# looping through vehicle entries
+ForEach($TRACKSTRING in $TRACKS) {
+    # get the folder name
+    $TRACKSTRING=($TRACKSTRING -split('='))
+    $TRACKFOLDER=($TRACKSTRING[1] -split(' ') -replace '"','')
+
+    # get the version string
+    $TRACKVERSION=($TRACKFOLDER[1] -split(','))
+
+    # remove the leading 'v' of the version string
+    $TRACKVERSION=($TRACKVERSION[0] -replace '^v','')
+
+    # get the last version installed in $TRACKFOLDER
+    $TRACKFOLDER=$TRACKFOLDER[0]
+    $TRACKINSTALLEDVERSION=((gci $RF2ROOT\Installed\Locations\$TRACKFOLDER\ -Dir | sort-object LastWriteTime | select -Last 1).BaseName)
+
+    # if ... replace a string function
+    # (gc "$RF2USERDATA\multiplayer.json") -replace """Test Day"":.*","""Test Day"":true," | set-content -Path "$RF2USERDATA\multiplayer.json"
+
+    # compare
+    if ( "$TRACKVERSION" -inotmatch "$TRACKINSTALLEDVERSION" ) {
+        echo $TRACKFOLDER" does not match"
+        echo "Found $TRACKINSTALLEDVERSION and $TRACKVERSION is found in mod definition."
+    
+        # example string we are looking for AstonMartin_Vantage_GT3_2019 v3.61-gtw24-01,0
+        #
+        # we are replacing the installed version with the version found in dat file
+        $DATFILECONTENT=($DATFILECONTENT -replace "$TRACKFOLDER v$TRACKVERSION","$TRACKFOLDER v$TRACKINSTALLEDVERSION")
         }
 
     }
