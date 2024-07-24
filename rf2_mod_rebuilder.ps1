@@ -3,9 +3,6 @@
 #
 # Stone, 03/2024, info@simracingjustfair.org
 #
-# todo:
-# - we need to check arguments what is given and at what position
-# - build mas file from All Cars & Tracks mas file in $RF2ROOT\Installed\rFm instead of copying dummy.mas
 
 . .\variables.ps1
 
@@ -18,6 +15,7 @@ forEach ($ARGUMENT in $args) {
  if ("($FILENAME | select-string '.dat')") {
   $DATFILE=$ARGUMENT
  } else {
+  # if no profile is given as argument we will use default from variables.ps1
   $PROFILE=$ARGUMENT
  }
 }
