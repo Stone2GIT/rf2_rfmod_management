@@ -12,7 +12,9 @@ $CURRENTLOCATION=((Get-Location).Path)
 
 # read args, but only the first one given for profile
 if ($args[0]) {
-    $PROFILE=$args[0]
+     $PROFILE=$args[0]
+    } else {
+     $PROFILE=player
     }
 
 if ($args[1]) {
