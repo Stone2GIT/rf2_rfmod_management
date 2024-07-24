@@ -5,6 +5,7 @@
 #
 # todo:
 # - we could choose to rebuild latest mod in pkginfo.dat if no dat filename is given
+# - (gc ./pkginfo.dat|select-string -Pattern "CurPackage") -split("=") | tail -n 1 gives CurPackage number
 
 . .\variables.ps1
 
