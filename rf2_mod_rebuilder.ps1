@@ -3,6 +3,9 @@
 #
 # Stone, 03/2024, info@simracingjustfair.org
 #
+# todo:
+# - we need to check arguments what is given and at what position
+# - build mas file from All Cars & Tracks mas file in $RF2ROOT\Installed\rFm instead of copying dummy.mas
 
 . .\variables.ps1
 
@@ -20,9 +23,8 @@ if ($args[0]) {
 if ($args[1]) {
      $DATFILE=$args[1]
     } else {
-     # filename of the dat file ...
-     $PREFIX="srjf-"
-     $DATFILE="$PREFIX"+"$PROFILE.dat"
+     write-host "Sorry, but we need a dat file mentioned ..."
+     exit 1
     }
 
 # filename of the rfmod file ...
@@ -32,12 +34,28 @@ $RFMODFILENAME="$PREFIX"+"$PROFILE"+"$CURRENTDATE.rfmod"
 $VERSION=((((gc $DATFILE |select-string -Pattern "^Version=") -split("="))[1]) -replace "\.","")
 $RFMFILENAME="$PREFIX"+"$PROFILE"+"$CURRENTDATE_$VERSION.rfm"
 
-# change to BuildModPackage folder ;-)
-cd $RF2ROOT\bmp
+# we need to extract and rename files from All Cars & Tracks mas file
+$ARGUMENTS=" *.* -x""$RF2ROOT\Installed\rFm\All Tracks & Cars_10.mas"" -c""$CURRENTLOCATION"" "
+start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow  -Wait
+move-item "All*_10.rfm" "default.rfm" -force
+move-item "All*smicon.dds" "smicon.dds" -force
+move-item "All*icon.dds" "icon.dds" -force
+
+# build mas file in appdata\roaming\~mastemp
+#
+#
+# build argument for modmgr
+$ARGUMENTS=" -m""$HOME\Appdata\roaming\~mastemp\$PREFIX$PROFILE.mas"" ""$CURRENTLOCATION\icon.dds"" ""$CURRENTLOCATION\smicon.dds"" ""$CURRENTLOCATION\default.rfm"" "
+
+# run modmgr to build mas file
+start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow  -Wait
+#
+#
+# end of build mas file in appdata\roaming\~mastemp
 
 # copy dummy.mas ... and copy the correct named mas file to MASTEMP
-cp dummy.mas $PREFIX$PROFILE.mas
-copy -v $PREFIX$PROFILE.mas $HOME\AppData\Roaming\~MASTEMP\$PREFIX$PROFILE".mas"
+#cp dummy.mas $PREFIX$PROFILE.mas
+#copy -v $PREFIX$PROFILE.mas $HOME\AppData\Roaming\~MASTEMP\$PREFIX$PROFILE".mas"
 
 # building mod package by using dat file and first entry in it
 $ARGUMENTS=" -c""$RF2ROOT"" -o""$RF2ROOT\Packages"" -b""$RF2ROOT\bmp\$DATFILE"" 0"
