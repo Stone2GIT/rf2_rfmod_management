@@ -5,21 +5,22 @@
 #
 # todo: run only if there has changed something
 
-. .\variables.ps1
+. ./variables.ps1
 
-# read in profile name as args, but only the first one given
+# read in rgs, but only the first one given
 if ($args[0]) {
     $PROFILE=$args[0]
     }
 
 # store the current date with month and day in numeric format
 $CURRENTDATE=(Get-Date -Format "MMdd")
+$CURRENTLOCATION=((Get-Location).Path)
 
 # filename of the dat file ...
 $PREFIX="srjf-"
 $DATFILE="$PREFIX"+"$PROFILE.dat"
 
-# the rfmod file name
+# the new rfmod file name for the updated one
 $RFMODFILENAME="$PREFIX"+"$PROFILE"+"$CURRENTDATE.rfmod"
 
 # setting new version in dat file using numeric date ... it is very unlikely we are going to update a mod twice a day
@@ -62,6 +63,8 @@ ForEach($VEHICLESTRING in $VEHICLES) {
     if ( "$VEHICLEVERSION" -inotmatch "$VEHICLEINSTALLEDVERSION" ) {
         echo $VEHICLEFOLDER" does not match"
         echo "Found $VEHICLEINSTALLEDVERSION and $VEHICLEVERSION is found in mod definition."
+
+	$UPDATE=1
     
         # example string we are looking for AstonMartin_Vantage_GT3_2019 v3.61-gtw24-01,0
         #
@@ -97,6 +100,8 @@ ForEach($TRACKSTRING in $TRACKS) {
     if ( "$TRACKVERSION" -inotmatch "$TRACKINSTALLEDVERSION" ) {
         echo $TRACKFOLDER" does not match"
         echo "Found $TRACKINSTALLEDVERSION and $TRACKVERSION is found in mod definition."
+
+	$UPDATE=1
     
         # example string we are looking for AstonMartin_Vantage_GT3_2019 v3.61-gtw24-01,0
         #
@@ -106,5 +111,8 @@ ForEach($TRACKSTRING in $TRACKS) {
 
     }
 
-# writing the changed dat file ...
-$DATFILECONTENT | set-content -Path $DATFILE
+if ($UPDATE -eq 1)
+ {
+  # writing the changed dat file ...
+  $DATFILECONTENT | set-content -Path $DATFILE
+ }
