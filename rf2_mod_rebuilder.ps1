@@ -17,6 +17,7 @@ $CURRENTLOCATION=((Get-Location).Path)
 forEach ($ARGUMENT in $args) {
  if ("($FILENAME | select-string '.dat')") {
   $DATFILE=$ARGUMENT
+  $CURRENTPACKAGE=0
  } else {
   # if no profile is given as argument we will use default from variables.ps1
   $PROFILE=$ARGUMENT
@@ -25,9 +26,13 @@ forEach ($ARGUMENT in $args) {
 
 # without a given dat file we cannot do anything
 if (-not "$DATFILE") {
- write-host "Sorry, but we need a dat file mentioned ..."
- timeout /t 10 | out-null
- exit 1
+ $DATFILE="$HOME\Appdata\Roaming\pkginfo.dat"
+ if (-not (Test-Path "$DATFILE" -Leaf)) {
+  write-host "Sorry, but we need a dat file at least given as argument or in appdata ..."
+  timeout /t 10 | out-null
+  exit 1
+} else {
+ $CURRENTPACKAGE=((gc $DATFILE|select-string -Pattern "CurPackage") -split("=") | tail -n 1)
 }
 
 # filename of the rfmod file ...
@@ -51,7 +56,8 @@ $ARGUMENTS=" -m""$HOME\Appdata\roaming\~mastemp\$PREFIX$PROFILE.mas"" ""$CURRENT
 start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow  -Wait
 
 # building mod package by using dat file and first entry in it
-$ARGUMENTS=" -c""$RF2ROOT"" -o""$RF2ROOT\Packages"" -b""$RF2ROOT\$DATFILE"" 0"
+#$ARGUMENTS=" -c""$RF2ROOT"" -o""$RF2ROOT\Packages"" -b""$RF2ROOT\$DATFILE"" 0"
+$ARGUMENTS=" -c""$RF2ROOT"" -o""$RF2ROOT\Packages"" -b""$RF2ROOT\$DATFILE"" ""$CURRENTPACKAGE"" "
 start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
 
 # install mod package
