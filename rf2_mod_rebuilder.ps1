@@ -40,12 +40,10 @@ if (-not "$DATFILE") {
 (gc $DATFILE) -replace "^Version=.*","Version=$CURRENTDATE" | set-content -Path "$DATFILE"
 
 # filename of the rfmod file ... this is already in dat file ...
-#$RFMODFILENAME="$PREFIX"+"$PROFILE"+"$CURRENTDATE.rfmod"
 $RFMODFILENAME=((gc $DATFILE | select-string -Pattern "^Location=" | select -last 1) -split("=") |select -last 1)
 
 # filename of the manifest
-$VERSION=((((gc $DATFILE |select-string -Pattern "^Version=") -split("="))[1]) -replace "\.","")
-$RFMFILENAME="$PREFIX"+"$PROFILE"+"$CURRENTDATE"+"_"+"$VERSION"+".rfm"
+$RFMFILENAME=( (($RFMODFILENAME -replace "\.rfmod","")+"_"+($CURRENTDATE -replace "\.","")+".rfm") -split("\\")| select -last 1 )
 
 # we need to extract and rename files from All Cars & Tracks mas file
 $ARGUMENTS=" *.dds *.rfm -x""$RF2ROOT\Installed\rFm\All Tracks & Cars_10.mas"" -o""$CURRENTLOCATION"" "
@@ -61,21 +59,23 @@ $ARGUMENTS=" -m""$HOME\Appdata\roaming\~mastemp\$PREFIX$PROFILE.mas"" ""$CURRENT
 start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow  -Wait
 
 # building mod package by using dat file and first entry in it
-#$ARGUMENTS=" -c""$RF2ROOT"" -o""$RF2ROOT\Packages"" -b""$RF2ROOT\$DATFILE"" 0"
 $ARGUMENTS=" -c""$RF2ROOT"" -o""$RF2ROOT\Packages"" -b""$DATFILE"" ""$CURRENTPACKAGE"" "
 start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
 
 # install mod package
 # TODO: exit codes
-$ARGUMENTS=" -p""$RF2ROOT\Packages"" -i""$RFMODFILENAME"" -c""$RF2ROOT"" "
+#$ARGUMENTS=" -p""$RF2ROOT\Packages"" -i""$RFMODFILENAME"" -c""$RF2ROOT"" "
+$ARGUMENTS=" -i""$RFMODFILENAME"" -c""$RF2ROOT"" "
 start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
 
-# change directory to $RF2ROOT
-#cd $RF2ROOT
-
 # start the mod ...
-$ARGUMENTS=" +profile=$PROFILE +rfm=$RFMFILENAME +oneclick"
-start-process -FilePath "$RF2ROOT\bin64\rFactor2 Dedicated.exe" -ArgumentList $ARGUMENTS -NoNewWindow
+$ARGUMENTS=" +profile=$PROFILE +rfm=""$RFMFILENAME"" +oneclick"
+
+# we need to be in RF2ROOT
+cd $RF2ROOT
+ write-host "Starting rF2 dedicated server"
+ start-process -FilePath "$RF2ROOT\bin64\rFactor2 Dedicated.exe" -ArgumentList $ARGUMENTS -NoNewWindow
+cd $CURRENTLOCATION
 
 # keep the window open to see error messages ...
-timeout /t 60 | out-null
+timeout /t 10
