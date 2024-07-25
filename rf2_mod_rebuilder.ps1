@@ -4,13 +4,13 @@
 # Stone, 03/2024, info@simracingjustfair.org
 #
 # todo:
-# - we could choose to rebuild latest mod in pkginfo.dat if no dat filename is given
-# - (gc ./pkginfo.dat|select-string -Pattern "CurPackage") -split("=") | tail -n 1 gives CurPackage number
 
 . .\variables.ps1
 
 # store the current date with month and day in numeric format
-$CURRENTDATE=(Get-Date -Format "MMdd")
+$CURRENTDATE=(Get-Date -Format "yy.MMdd")
+
+# pwd ...
 $CURRENTLOCATION=((Get-Location).Path)
 
 # read in and identify args
@@ -36,8 +36,11 @@ if (-not "$DATFILE") {
  }
 }
 
-# filename of the rfmod file ...
-$RFMODFILENAME="$PREFIX"+"$PROFILE"+"$CURRENTDATE.rfmod"
+# replace the version in dat file
+(gc $DATFILE) -replace """^Version""=.*","""Version""=$CURRENTDATE" | set-content -Path "$DATFILE"
+
+# filename of the rfmod file ... this is already in dat file ...
+#$RFMODFILENAME="$PREFIX"+"$PROFILE"+"$CURRENTDATE.rfmod"
 
 # filename of the manifest
 $VERSION=((((gc $DATFILE |select-string -Pattern "^Version=") -split("="))[1]) -replace "\.","")
