@@ -17,7 +17,7 @@ $CURRENTLOCATION=((Get-Location).Path)
 forEach ($ARGUMENT in $args) {
  if ("($FILENAME | select-string '.dat')") {
   $DATFILE=$ARGUMENT
-  $CURRENTPACKAGE=0
+  $CURRENTPACKAGE=((gc $DATFILE |select-string -Pattern "CurPackage"|select -last 1) -split("=") |select -last 1)
  } else {
   # if no profile is given as argument we will use default from variables.ps1
   $PROFILE=$ARGUMENT
@@ -59,6 +59,7 @@ $ARGUMENTS=" -m""$HOME\Appdata\roaming\~mastemp\$PREFIX$PROFILE.mas"" ""$CURRENT
 start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow  -Wait
 
 # building mod package by using dat file and first entry in it
+write-host "Current package number is "$CURRENTPACKAGE
 $ARGUMENTS=" -c""$RF2ROOT"" -o""$RF2ROOT\Packages"" -b""$DATFILE"" $CURRENTPACKAGE "
 start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
 
