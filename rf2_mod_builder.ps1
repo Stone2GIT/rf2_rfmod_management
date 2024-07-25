@@ -37,7 +37,7 @@ if (-not "$DATFILE") {
 }
 
 # replace the version in dat file
-(gc $DATFILE) -replace "^Version=.*","Version=$CURRENTDATE" | set-content -Path "$DATFILE"
+(gc $DATFILE) -replace "^Version=.*","Version=$CURRENTDATE" | set-content -Path "$DATFILE" -Encoding ASCII
 
 # filename of the rfmod file ... this is already in dat file ...
 $RFMODFILENAME=((gc $DATFILE | select-string -Pattern "^Location=" | select -last 1) -split("=") |select -last 1)
@@ -59,7 +59,7 @@ $ARGUMENTS=" -m""$HOME\Appdata\roaming\~mastemp\$PREFIX$PROFILE.mas"" ""$CURRENT
 start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow  -Wait
 
 # building mod package by using dat file and first entry in it
-$ARGUMENTS=" -c""$RF2ROOT"" -o""$RF2ROOT\Packages"" -b""$DATFILE"" ""$CURRENTPACKAGE"" "
+$ARGUMENTS=" -c""$RF2ROOT"" -o""$RF2ROOT\Packages"" -b""$DATFILE"" $CURRENTPACKAGE "
 start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
 
 # install mod package
@@ -78,4 +78,4 @@ cd $RF2ROOT
 cd $CURRENTLOCATION
 
 # keep the window open to see error messages ...
-timeout /t 10
+#timeout /t 10

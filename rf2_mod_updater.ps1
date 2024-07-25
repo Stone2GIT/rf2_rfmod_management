@@ -39,7 +39,7 @@ if (-not "$DATFILE") {
 }
 
 # replace the version in dat file
-(gc $DATFILE) -replace "^Version=.*","Version=$CURRENTDATE" | set-content -Path "$DATFILE"
+(gc $DATFILE) -replace "^Version=.*","Version=$CURRENTDATE" | set-content -Path "$DATFILE" -Encoding ASCII
 
 # filename of the rfmod file ... this is already in dat file ...
 $RFMODFILENAME=((gc $DATFILE | select-string -Pattern "^Location=" | select -last 1) -split("=") |select -last 1)
@@ -73,9 +73,6 @@ ForEach($VEHICLESTRING in $VEHICLES) {
     #
     $VEHICLEFOLDER=$VEHICLEFOLDER[0]
     $VEHICLEINSTALLEDVERSION=((gci $RF2ROOT\Installed\Vehicles\$VEHICLEFOLDER\ -Dir | sort-object LastWriteTime | select -Last 1).BaseName)
-
-    # if ... replace a string function
-    # (gc "$RF2USERDATA\multiplayer.json") -replace """Test Day"":.*","""Test Day"":true," | set-content -Path "$RF2USERDATA\multiplayer.json"
 
     # compare
     if ( "$VEHICLEVERSION" -inotmatch "$VEHICLEINSTALLEDVERSION" ) {
@@ -132,7 +129,7 @@ ForEach($TRACKSTRING in $TRACKS) {
 if ($UPDATE -eq 1)
  {
   # writing the changed dat file ...
-  $DATFILECONTENT | set-content -Path $DATFILE
+  $DATFILECONTENT | set-content -Path $DATFILE -Encoding ASCII
 
   # calling mod_builder ...
   start-process -FilePath powershell -ArgumentList "$CURRENTLOCATION\rf2_mod_builder.ps1 $DATFILE" -NoNewWindow -Wait
