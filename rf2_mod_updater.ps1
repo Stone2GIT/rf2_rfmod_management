@@ -10,13 +10,16 @@
 . ./variables.ps1
 
 # store the current date with month and day in numeric format
-$CURRENTDATE=(Get-Date -Format "MMdd")
+$CURRENTDATE=(Get-Date -Format "yy.MMdd")
+
+# pwd ...
 $CURRENTLOCATION=((Get-Location).Path)
 
 # read in and identify args
 forEach ($ARGUMENT in $args) {
  if ("($FILENAME | select-string '.dat')") {
   $DATFILE=$ARGUMENT
+  $CURRENTPACKAGE=0
  } else {
   # if no profile is given as argument we will use default from variables.ps1
   $PROFILE=$ARGUMENT
@@ -25,19 +28,24 @@ forEach ($ARGUMENT in $args) {
 
 # without a given dat file we cannot do anything
 if (-not "$DATFILE") {
- write-host "Sorry, but we need a dat file mentioned ..."
- timeout /t 10 | out-null
- exit 1
+ $DATFILE="$HOME\Appdata\Roaming\pkginfo.dat"
+ if (-not (Test-Path "$DATFILE" -PathType Leaf)) {
+  write-host "Sorry, but we need a dat file at least given as argument or in appdata ..."
+  timeout /t 10 | out-null
+  exit 1
+ } else {
+  $CURRENTPACKAGE=((gc $DATFILE |select-string -Pattern "CurPackage"|select -last 1) -split("=") |select -last 1)
+ }
 }
 
-# the new rfmod file name for the updated one
-$RFMODFILENAME="$PREFIX"+"$PROFILE"+"$CURRENTDATE.rfmod"
+# replace the version in dat file
+(gc $DATFILE) -replace "^Version=.*","Version=$CURRENTDATE" | set-content -Path "$DATFILE"
 
-# setting new version in dat file using numeric date ... it is very unlikely we are going to update a mod twice a day
-(gc $DATFILE) -replace """^Version""=.*","""Version""=$CURRENTDATE" | set-content -Path "$DATFILE"
+# filename of the rfmod file ... this is already in dat file ...
+$RFMODFILENAME=((gc $DATFILE | select-string -Pattern "^Location=" | select -last 1) -split("=") |select -last 1)
 
-# setting correct rfmod file location in dat file
-(gc $DATFILE) -replace """^Location""=.*","""Location""=$RF2ROOT\Packages\$RFMODFILENAME" | set-content -Path "$DATFILE"
+# filename of the manifest
+$RFMFILENAME=( (($RFMODFILENAME -replace "\.rfmod","")+"_"+($CURRENTDATE -replace "\.","")+".rfm") -split("\\")| select -last 1 )
 
 # read in whole dat file
 $DATFILECONTENT=(gc $DATFILE)
@@ -125,4 +133,7 @@ if ($UPDATE -eq 1)
  {
   # writing the changed dat file ...
   $DATFILECONTENT | set-content -Path $DATFILE
+
+  # calling mod_builder ...
+  start-process -FilePath powershell -ArgumentList "$CURRENTLOCATION\rf2_mod_builder.ps1 $DATFILE" -NoNewWindow -Wait
  }
