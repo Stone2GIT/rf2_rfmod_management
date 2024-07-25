@@ -32,15 +32,16 @@ if (-not "$DATFILE") {
   timeout /t 10 | out-null
   exit 1
  } else {
-  $CURRENTPACKAGE=((gc $DATFILE -tail 2|select-string -Pattern "CurPackage") -split("=") |select -last 1)
+  $CURRENTPACKAGE=((gc $DATFILE |select-string -Pattern "CurPackage"|select -last 1) -split("=") |select -last 1)
  }
 }
 
 # replace the version in dat file
-(gc $DATFILE) -replace """^Version""=.*","""Version""=$CURRENTDATE" | set-content -Path "$DATFILE"
+(gc $DATFILE) -replace "^Version=.*","Version=$CURRENTDATE" | set-content -Path "$DATFILE"
 
 # filename of the rfmod file ... this is already in dat file ...
 #$RFMODFILENAME="$PREFIX"+"$PROFILE"+"$CURRENTDATE.rfmod"
+$RFMODFILENAME=((gc $DATFILE | select-string -Pattern "^Location=" | select -last 1) -split("=") |select -last 1)
 
 # filename of the manifest
 $VERSION=((((gc $DATFILE |select-string -Pattern "^Version=") -split("="))[1]) -replace "\.","")
