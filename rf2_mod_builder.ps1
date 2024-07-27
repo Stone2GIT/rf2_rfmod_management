@@ -75,8 +75,8 @@ $ARGUMENTS=" +profile=$PROFILE +rfm=""$RFMFILENAME"" +oneclick"
 # we need to be in RF2ROOT
 cd $RF2ROOT
  write-host "Starting rF2 dedicated server"
-# start-process -FilePath "$RF2ROOT\bin64\rFactor2 Dedicated.exe" -ArgumentList $ARGUMENTS -NoNewWindow
+ start-process -FilePath "$RF2ROOT\bin64\rFactor2 Dedicated.exe" -ArgumentList $ARGUMENTS -NoNewWindow
 cd $CURRENTLOCATION
 
 # keep the window open to see error messages ...
-#timeout /t 10
+timeout /t 10
