@@ -11,7 +11,7 @@ Scripts provided 'as is'.
 ## Note
 
 - PS1 files need to be opened with editor once in order to get rid of the signing warning.
-- Teamentries and layouts of vehicles and tracks will not be extended if there are new ones
+- Layout entries of tracks will not be updated if there are new ones :-(
 
 ## Quick start guide
 
