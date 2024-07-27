@@ -20,7 +20,7 @@ forEach ($ARGUMENT in $args) {
   $CURRENTPACKAGE=((gc $DATFILE |select-string -Pattern "CurPackage"|select -last 1) -split("=") |select -last 1)
  } else {
   # if no profile is given as argument we will use default from variables.ps1
-  $PROFILE=$ARGUMENT
+  $PLRPROFILE=$ARGUMENT
  }
 }
 
@@ -53,7 +53,7 @@ move-item "All*smicon.dds" "smicon.dds" -force
 move-item "All*icon.dds" "icon.dds" -force
 
 # build argument for modmgr
-$ARGUMENTS=" -m""$HOME\Appdata\roaming\~mastemp\$PREFIX$PROFILE.mas"" ""$CURRENTLOCATION\icon.dds"" ""$CURRENTLOCATION\smicon.dds"" ""$CURRENTLOCATION\default.rfm"" "
+$ARGUMENTS=" -m""$HOME\Appdata\roaming\~mastemp\$PREFIX$PLRPROFILE.mas"" ""$CURRENTLOCATION\icon.dds"" ""$CURRENTLOCATION\smicon.dds"" ""$CURRENTLOCATION\default.rfm"" "
 
 # run modmgr to build mas file
 start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow  -Wait
@@ -70,7 +70,7 @@ $ARGUMENTS=" -i""$RFMODFILENAME"" -c""$RF2ROOT"" "
 start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
 
 # start the mod ...
-$ARGUMENTS=" +profile=$PROFILE +rfm=""$RFMFILENAME"" +oneclick"
+$ARGUMENTS=" +profile=$PLRPROFILE +rfm=""$RFMFILENAME"" +oneclick"
 
 # we need to be in RF2ROOT
 cd $RF2ROOT
