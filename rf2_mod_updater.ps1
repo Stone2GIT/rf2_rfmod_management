@@ -131,7 +131,10 @@ $VEHICLELINE = """$VEHICLEFOLDER v$VEHICLEINSTALLEDVERSION,0"" " + $VEHICLELINE
         #
         # we are replacing the installed version with the version found in dat file
         #$DATFILECONTENT=($DATFILECONTENT -replace "$VEHICLEFOLDER v$VEHICLEVERSION","$VEHICLEFOLDER v$VEHICLEINSTALLEDVERSION")
-        $DATFILECONTENT=($DATFILECONTENT -replace "$VEHICLEFOLDER v$VEHICLEVERSION","$VEHICLEFOLDER v$VEHICLEINSTALLEDVERSION")
+        $DATFILECONTENT=($DATFILECONTENT -replace "$VEHICLEFOLDER v$VEHICLEVERSION.*","$VEHICLELINE")
+
+
+         #-replace "^Version=.*","Version=$CURRENTDATE" 
 
         # set variable in order to run update
         $UPDATE=1
@@ -186,5 +189,5 @@ if ($UPDATE -eq 1)
   $DATFILECONTENT | set-content -Path $DATFILE -Encoding ASCII
 
   # calling mod_builder ...
-  start-process -FilePath powershell -ArgumentList "$CURRENTLOCATION\rf2_mod_builder.ps1 $DATFILE" -NoNewWindow -Wait
+  #start-process -FilePath powershell -ArgumentList "$CURRENTLOCATION\rf2_mod_builder.ps1 $DATFILE" -NoNewWindow -Wait
  }
