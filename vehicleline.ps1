@@ -5,7 +5,7 @@
 #
 
 # get all components from vehicles directory
-$COMPONENTS=((Get-ChildItem -Path Vehicles).Name)
+$COMPONENTS=((Get-ChildItem -Path Vehicles -Attributes Directory).Name)
 
 # run for each component
 forEach ($COMPONENT in $COMPONENTS)
