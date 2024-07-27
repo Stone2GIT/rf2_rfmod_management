@@ -1,3 +1,6 @@
 Vehicles/
 tmp/
 .idea/
+
+*.dds
+*.rfm
