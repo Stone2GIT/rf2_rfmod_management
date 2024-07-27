@@ -20,9 +20,6 @@ forEach ($ARGUMENT in $args) {
  if ("($FILENAME | select-string '.dat')") {
   $DATFILE=$ARGUMENT
   #$CURRENTPACKAGE=((Get-Content $DATFILE |select-string -Pattern "CurPackage"|select-object -last 1) -split("=") |select-object -last 1)
- } else {
-  # if no profile is given as argument we will use default from variables.ps1
-  #$PLRPROFILE=$ARGUMENT
  }
 }
 
@@ -33,19 +30,18 @@ if (-not "$DATFILE") {
   write-host "Sorry, but we need a dat file at least given as argument or in appdata ..."
   timeout /t 10 | out-null
   exit 1
- } else {
-  #$CURRENTPACKAGE=((Get-Content $DATFILE |select-string -Pattern "CurPackage"|select-object -last 1) -split("=") |select-object -last 1)
  }
 }
 
+# if tmp exists ... remove it
+if (Test-Path tmp)
+ {
+  remove-Item -Recurse tmp
+  new-item -Path tmp -ItemType Director
+ }
+
 # replace the version in dat file
 (Get-Content $DATFILE) -replace "^Version=.*","Version=$CURRENTDATE" | set-content -Path "$DATFILE" -Encoding ASCII
-
-# filename of the rfmod file ... this is already in dat file ...
-#$RFMODFILENAME=((Get-Content $DATFILE | select-string -Pattern "^Location=" |select-object -last 1) -split("=") |select-object -last 1)
-
-# filename of the manifest
-#$RFMFILENAME=( (($RFMODFILENAME -replace "\.rfmod","")+"_"+($CURRENTDATE -replace "\.","")+".rfm") -split("\\")| select-object -last 1 )
 
 # read in whole dat file
 $DATFILECONTENT=(Get-Content $DATFILE)
@@ -82,9 +78,59 @@ ForEach($VEHICLESTRING in $VEHICLES) {
         write-host $VEHICLEFOLDER" does not match"
         write-host "Found $VEHICLEINSTALLEDVERSION and $VEHICLEVERSION is found in mod definition."
             
-        # example string we are looking for AstonMartin_Vantage_GT3_2019 v3.61-gtw24-01,0
+
+
+
+#
+#
+#
+# at this point we need to extract in the .mas file from $VEHICLEINSTALLEDVERSION and extract .veh files
+        
+# look for .mas files in each VEHICLEFOLDER
+$MASFILES=(Get-ChildItem "$RF2ROOT\Installed\Vehicles\$VEHICLEFOLDER\$VEHICLEINSTALLEDVERSION\*.mas")
+
+# what to do if we have found masfiles
+if ($MASFILES)
+ {
+  forEach ($MASFILE in $MASFILES)
+{
+
+$VEHICLELINE=""
+
+# if there is a masfile existing create folder and extract -veh files to it
+if (-not (Test-Path "$CURRENTLOCATION\tmp\$VEHICLEFOLDER")) { new-item -Path "$CURRENTLOCATION\tmp\$VEHICLEFOLDER" -ItemType Directory }
+
+# argument list
+$ARGUMENTS=" *.veh -x""$MASFILE"" -o""$CURRENTLOCATION\tmp\$VEHICLEFOLDER"" "
+
+# extract the .veh files from masfile
+start-process "$RF2ROOT\bin64\modmgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
+
+# look for .veh files in each VEHICLEFOLDER
+$VEHFILES=(Get-ChildItem "$CURRENTLOCATION\tmp\$VEHICLEFOLDER\*.veh")
+
+# parse each .veh file
+forEach ($VEHFILE in $VEHFILES)
+{
+$VEHICLEENTRY = (((Get-Content $VEHFILE| select-string -Pattern "^Description") -split ('=')| select-object -last 1) -replace '"', "")
+
+# line up the entries
+$VEHICLELINE = $VEHICLELINE + " " + """$VEHICLEENTRY,1"""
+}
+
+# add quotations to vehicleline
+$VEHICLELINE = """$VEHICLEFOLDER v$VEHICLEINSTALLEDVERSION,0"" " + $VEHICLELINE
+
+}
+}
+#
+#
+#
+
+        # example string we are looking for "AstonMartin_Vantage_GT3_2019 v3.61-gtw24-01,0"
         #
         # we are replacing the installed version with the version found in dat file
+        #$DATFILECONTENT=($DATFILECONTENT -replace "$VEHICLEFOLDER v$VEHICLEVERSION","$VEHICLEFOLDER v$VEHICLEINSTALLEDVERSION")
         $DATFILECONTENT=($DATFILECONTENT -replace "$VEHICLEFOLDER v$VEHICLEVERSION","$VEHICLEFOLDER v$VEHICLEINSTALLEDVERSION")
 
         # set variable in order to run update
@@ -131,8 +177,11 @@ ForEach($TRACKSTRING in $TRACKS) {
 
     }
 
+# if the UPDATE value is 1 ...
 if ($UPDATE -eq 1)
  {
+
+  write-host "Writing updated "$DATFILE
   # writing the changed dat file ...
   $DATFILECONTENT | set-content -Path $DATFILE -Encoding ASCII
 
