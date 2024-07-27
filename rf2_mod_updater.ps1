@@ -5,7 +5,7 @@
 #
 # todo:
 # - we could choose to rebuild latest mod in pkginfo.dat if no dat filename is given
-# - (gc ./pkginfo.dat|select-string -Pattern "CurPackage") -split("=") | tail -n 1 gives CurPackage number
+# - (Get-Content ./pkginfo.dat|select-string -Pattern "CurPackage") -split("=") | tail -n 1 gives CurPackage number
 
 . ./variables.ps1
 
@@ -19,10 +19,10 @@ $CURRENTLOCATION=((Get-Location).Path)
 forEach ($ARGUMENT in $args) {
  if ("($FILENAME | select-string '.dat')") {
   $DATFILE=$ARGUMENT
-  $CURRENTPACKAGE=0
+  #$CURRENTPACKAGE=((Get-Content $DATFILE |select-string -Pattern "CurPackage"|select-object -last 1) -split("=") |select-object -last 1)
  } else {
   # if no profile is given as argument we will use default from variables.ps1
-  $PROFILE=$ARGUMENT
+  #$PLRPROFILE=$ARGUMENT
  }
 }
 
@@ -31,27 +31,27 @@ if (-not "$DATFILE") {
  $DATFILE="$HOME\Appdata\Roaming\pkginfo.dat"
  if (-not (Test-Path "$DATFILE" -PathType Leaf)) {
   write-host "Sorry, but we need a dat file at least given as argument or in appdata ..."
-  timeout /t 10 | out-null
+  timeout /t 10 | out-null
   exit 1
  } else {
-  $CURRENTPACKAGE=((gc $DATFILE |select-string -Pattern "CurPackage"|select -last 1) -split("=") |select -last 1)
+  #$CURRENTPACKAGE=((Get-Content $DATFILE |select-string -Pattern "CurPackage"|select-object -last 1) -split("=") |select-object -last 1)
  }
 }
 
 # replace the version in dat file
-(gc $DATFILE) -replace "^Version=.*","Version=$CURRENTDATE" | set-content -Path "$DATFILE" -Encoding ASCII
+(Get-Content $DATFILE) -replace "^Version=.*","Version=$CURRENTDATE" | set-content -Path "$DATFILE" -Encoding ASCII
 
 # filename of the rfmod file ... this is already in dat file ...
-$RFMODFILENAME=((gc $DATFILE | select-string -Pattern "^Location=" | select -last 1) -split("=") |select -last 1)
+#$RFMODFILENAME=((Get-Content $DATFILE | select-string -Pattern "^Location=" |select-object -last 1) -split("=") |select-object -last 1)
 
 # filename of the manifest
-$RFMFILENAME=( (($RFMODFILENAME -replace "\.rfmod","")+"_"+($CURRENTDATE -replace "\.","")+".rfm") -split("\\")| select -last 1 )
+#$RFMFILENAME=( (($RFMODFILENAME -replace "\.rfmod","")+"_"+($CURRENTDATE -replace "\.","")+".rfm") -split("\\")| select-object -last 1 )
 
 # read in whole dat file
-$DATFILECONTENT=(gc $DATFILE)
+$DATFILECONTENT=(Get-Content $DATFILE)
 
 # get all vehicle entries in dat file
-$VEHICLES=(gc $DATFILE | select-string -Pattern 'Vehicle=')
+$VEHICLES=(Get-Content $DATFILE | select-string -Pattern 'Vehicle=')
 
 # looping through vehicle entries
 ForEach($VEHICLESTRING in $VEHICLES) {
@@ -72,12 +72,12 @@ ForEach($VEHICLESTRING in $VEHICLES) {
     # think of 3.61-gtw24-01 and 3.61-zzz-01
     #
     $VEHICLEFOLDER=$VEHICLEFOLDER[0]
-    $VEHICLEINSTALLEDVERSION=((gci $RF2ROOT\Installed\Vehicles\$VEHICLEFOLDER\ -Dir | sort-object LastWriteTime | select -Last 1).BaseName)
+    $VEHICLEINSTALLEDVERSION=((Get-ChildItem $RF2ROOT\Installed\Vehicles\$VEHICLEFOLDER\ -Dir | sort-object LastWriteTime | select-object -Last 1).BaseName)
 
     # compare
     if ( "$VEHICLEVERSION" -inotmatch "$VEHICLEINSTALLEDVERSION" ) {
-        echo $VEHICLEFOLDER" does not match"
-        echo "Found $VEHICLEINSTALLEDVERSION and $VEHICLEVERSION is found in mod definition."
+        write-host $VEHICLEFOLDER" does not match"
+        write-host "Found $VEHICLEINSTALLEDVERSION and $VEHICLEVERSION is found in mod definition."
 
 	$UPDATE=1
     
@@ -90,7 +90,7 @@ ForEach($VEHICLESTRING in $VEHICLES) {
     }
 
 # get all track entries in dat file
-$TRACKS=(gc $DATFILE | select-string -Pattern 'Track=')
+$TRACKS=(Get-Content $DATFILE | select-string -Pattern 'Track=')
 
 # looping through vehicle entries
 ForEach($TRACKSTRING in $TRACKS) {
@@ -106,15 +106,15 @@ ForEach($TRACKSTRING in $TRACKS) {
 
     # get the last version installed in $TRACKFOLDER
     $TRACKFOLDER=$TRACKFOLDER[0]
-    $TRACKINSTALLEDVERSION=((gci $RF2ROOT\Installed\Locations\$TRACKFOLDER\ -Dir | sort-object LastWriteTime | select -Last 1).BaseName)
+    $TRACKINSTALLEDVERSION=((Get-ChildItem $RF2ROOT\Installed\Locations\$TRACKFOLDER\ -Dir | sort-object LastWriteTime | select-object -Last 1).BaseName)
 
     # if ... replace a string function
-    # (gc "$RF2USERDATA\multiplayer.json") -replace """Test Day"":.*","""Test Day"":true," | set-content -Path "$RF2USERDATA\multiplayer.json"
+    # (Get-Content "$RF2USERDATA\multiplayer.json") -replace """Test Day"":.*","""Test Day"":true," | set-content -Path "$RF2USERDATA\multiplayer.json"
 
     # compare
     if ( "$TRACKVERSION" -inotmatch "$TRACKINSTALLEDVERSION" ) {
-        echo $TRACKFOLDER" does not match"
-        echo "Found $TRACKINSTALLEDVERSION and $TRACKVERSION is found in mod definition."
+        write-host $TRACKFOLDER" does not match"
+        write-host "Found $TRACKINSTALLEDVERSION and $TRACKVERSION is found in mod definition."
 
 	$UPDATE=1
     
