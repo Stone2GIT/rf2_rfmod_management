@@ -19,20 +19,20 @@ if (Test-Path tmp)
   new-item -Path tmp -ItemType Director
  }
 
-# get all components from vehicles directory
-$COMPONENTS=((Get-ChildItem -Path Vehicles -Attributes Directory).Name)
+# get all VEHICLEFOLDERS from vehicles directory
+$VEHICLEFOLDERS=((Get-ChildItem -Path Vehicles -Attributes Directory).Name)
 
-# run for each component
-forEach ($COMPONENT in $COMPONENTS)
+# run for each VEHICLEFOLDER
+forEach ($VEHICLEFOLDER in $VEHICLEFOLDERS)
  {
   # empts VEHICLELINE
   $VEHICLELINE=""
 
-  # gets last version installed in $COMPONENT
-  $COMPONENTLASTVERSION=((get-childitem "Vehicles\$COMPONENT" -Dir | sort-object LastWriteTime | select-object -Last 1).BaseName)
+  # gets last version installed in $VEHICLEFOLDER
+  $VEHICLEFOLDERINSTALLEDVERSION=((get-childitem "Vehicles\$VEHICLEFOLDER" -Dir | sort-object LastWriteTime | select-object -Last 1).BaseName)
 
-  # look for .mas files in each component
-  $MASFILES=(Get-ChildItem "Vehicles\$COMPONENT\$COMPONENTLASTVERSION\*.mas")
+  # look for .mas files in each VEHICLEFOLDER
+  $MASFILES=(Get-ChildItem "Vehicles\$VEHICLEFOLDER\$VEHICLEFOLDERINSTALLEDVERSION\*.mas")
 
   # what to do if we have found masfiles
   if ($MASFILES)
@@ -40,16 +40,16 @@ forEach ($COMPONENT in $COMPONENTS)
    forEach ($MASFILE in $MASFILES)
    {
     # if there is a masfile existing create folder and extract -veh files to it
-    if (-not (Test-Path "tmp\$COMPONENT")) { new-item -Path "tmp\$COMPONENT" -ItemType Directory }
+    if (-not (Test-Path "tmp\$VEHICLEFOLDER")) { new-item -Path "tmp\$VEHICLEFOLDER" -ItemType Directory }
 
     # argument list
-    $ARGUMENTS=" *.veh -x""$MASFILE"" -o""$CURRENTLOCATION\tmp\$COMPONENT"" "
+    $ARGUMENTS=" *.veh -x""$MASFILE"" -o""$CURRENTLOCATION\tmp\$VEHICLEFOLDER"" "
 
     # extract the .veh files from masfile
     start-process "$RF2ROOT\bin64\modmgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
 
-    # look for .veh files in each component
-    $VEHFILES=(Get-ChildItem "$CURRENTLOCATION\tmp\$COMPONENT\*.veh")
+    # look for .veh files in each VEHICLEFOLDER
+    $VEHFILES=(Get-ChildItem "$CURRENTLOCATION\tmp\$VEHICLEFOLDER\*.veh")
 
     # parse each .veh file
     forEach ($VEHFILE in $VEHFILES)
@@ -61,7 +61,7 @@ forEach ($COMPONENT in $COMPONENTS)
     }
 
     # add quotations to vehicleline
-    $VEHICLELINE = """$COMPONENT v3.61,0"" " + $VEHICLELINE
+    $VEHICLELINE = """$VEHICLEFOLDER v3.61,0"" " + $VEHICLELINE
 
     $VEHICLELINE
    }
