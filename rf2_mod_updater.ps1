@@ -55,11 +55,14 @@ $VEHICLES=(Get-Content $DATFILE | select-string -Pattern 'Vehicle=')
 
 # looping through vehicle entries
 ForEach($VEHICLESTRING in $VEHICLES) {
-    # get the folder name
+    
+    # get the folder name, VEHICLESTRING might be e.g. Vehicle="Callaway_Corvette_GT3_2017 v2024.07.25,0" "SRC Corvette Guest #108,1" "Simracing:Justfair #61,1"
     $VEHICLESTRING=($VEHICLESTRING -split('='))
+
+    # VEHICLEFOLDER will be e.g. Callaway_Corvette_GT3_2017
     $VEHICLEFOLDER=($VEHICLESTRING[1] -split(' ') -replace '"','')
 
-    # get the version string
+    # get the version string, might be e.g. v3.61
     $VEHICLEVERSION=($VEHICLEFOLDER[1] -split(','))
 
     # remove the leading 'v' of the version string
@@ -78,13 +81,14 @@ ForEach($VEHICLESTRING in $VEHICLES) {
     if ( "$VEHICLEVERSION" -inotmatch "$VEHICLEINSTALLEDVERSION" ) {
         write-host $VEHICLEFOLDER" does not match"
         write-host "Found $VEHICLEINSTALLEDVERSION and $VEHICLEVERSION is found in mod definition."
-
-	$UPDATE=1
-    
+            
         # example string we are looking for AstonMartin_Vantage_GT3_2019 v3.61-gtw24-01,0
         #
         # we are replacing the installed version with the version found in dat file
         $DATFILECONTENT=($DATFILECONTENT -replace "$VEHICLEFOLDER v$VEHICLEVERSION","$VEHICLEFOLDER v$VEHICLEINSTALLEDVERSION")
+
+        # set variable in order to run update
+        $UPDATE=1
         }
 
     }
@@ -116,12 +120,13 @@ ForEach($TRACKSTRING in $TRACKS) {
         write-host $TRACKFOLDER" does not match"
         write-host "Found $TRACKINSTALLEDVERSION and $TRACKVERSION is found in mod definition."
 
-	$UPDATE=1
-    
         # example string we are looking for AstonMartin_Vantage_GT3_2019 v3.61-gtw24-01,0
         #
         # we are replacing the installed version with the version found in dat file
         $DATFILECONTENT=($DATFILECONTENT -replace "$TRACKFOLDER v$TRACKVERSION","$TRACKFOLDER v$TRACKINSTALLEDVERSION")
+
+        # set variable in order to run update
+        $UPDATE=1
         }
 
     }
