@@ -21,7 +21,7 @@ Scripts provided 'as is'.
 
 3. configure RF2ROOT in variables.ps1
 
-4. generate dat file from $HOME/Appdata/Roaming/pkginfo.dat
+4. generate dat file from or simply use $HOME/Appdata/Roaming/pkginfo.dat
 
 ### rf2_mod_builder
 
