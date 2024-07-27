@@ -119,13 +119,14 @@ $VEHICLELINE = $VEHICLELINE + " " + """$VEHICLEENTRY,1"""
 }
 
 # add quotations to vehicleline
-$VEHICLELINE = """$VEHICLEFOLDER v$VEHICLEINSTALLEDVERSION,0"" " + $VEHICLELINE
+$VEHICLELINE = """$VEHICLEFOLDER v$VEHICLEINSTALLEDVERSION,0""" + $VEHICLELINE
 
 }
 }
 #
 #
 #
+
 
         # example string we are looking for "AstonMartin_Vantage_GT3_2019 v3.61-gtw24-01,0"
         #
