@@ -1,4 +1,4 @@
-﻿#
+﻿ #
 # simple script in order to update workshop items
 #
 # Dietmar Stein, 03/2024, info@simracingjustfair.org
@@ -14,6 +14,7 @@
 . ./variables.ps1
 
 $CURRENTDATE=(Get-Date -Format "MMdd")
+$CURRENTLOCATION=((Get-Location).Path)
 
 # getting SteamIDs by simply using $args
 $STEAMIDS=$args
@@ -29,7 +30,7 @@ $STEAMIDS=(gci -Path $RF2WORKSHOPPKGS|select -Expand Name)
 foreach ($STEAMID in $STEAMIDS)
  {  
     write-host "Adding SteamID $STEAMID to steamcmd script."
-    Add-Content -Path $CURRENTDATE".ids" -value "workshop_download_item 365960 $STEAMID validate"
+    Add-Content -Path $CURRENTLOCATION\$CURRENTDATE".ids" -value "workshop_download_item 365960 $STEAMID validate"
 
     #
     # 07/2024
@@ -46,7 +47,7 @@ foreach ($STEAMID in $STEAMIDS)
     write-host "Finished generating script file."
 
     # generating arguments string
-    $ARGUMENTS=" +force_install_dir ""$RF2ROOT"" +login anonymous +runscript $RF2ROOT\$CURRENTDATE"".ids"" +quit"
+    $ARGUMENTS=" +force_install_dir ""$RF2ROOT"" +login anonymous +runscript $CURRENTLOCATION\$CURRENTDATE"".ids"" +quit"
     
     #
     # 07/2024
