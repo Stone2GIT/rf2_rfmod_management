@@ -13,6 +13,7 @@ $CURRENTDATE=(Get-Date -Format "yy.MMdd")
 # pwd ...
 $CURRENTLOCATION=((Get-Location).Path)
 
+if ($args[0]) {
 # read in and identify args
 forEach ($ARGUMENT in $args) {
  if ("($FILENAME | select-string '.dat')") {
@@ -22,6 +23,7 @@ forEach ($ARGUMENT in $args) {
   # if no profile is given as argument we will use default from variables.ps1
   $PLRPROFILE=$ARGUMENT
  }
+}
 }
 
 # without a given dat file we cannot do anything
