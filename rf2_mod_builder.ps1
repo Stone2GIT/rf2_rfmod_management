@@ -47,27 +47,35 @@ $RFMODFILENAME=((gc $DATFILE | select-string -Pattern "^Location=" | select -la
 # filename of the manifest
 $RFMFILENAME=( (($RFMODFILENAME -replace "\.rfmod","")+"_"+($CURRENTDATE -replace "\.","")+".rfm") -split("\\")| select -last 1 )
 
+# get the filename of the original / previous used masfile
+$MASFILE=((gc $DATFILE | select-string -Pattern "^RFM=" | select -last 1) -split("\\") |select -last 1)
+
 # we need to extract and rename files from All Cars & Tracks mas file
-$ARGUMENTS=" *.dds *.rfm -x""$RF2ROOT\Installed\rFm\All Tracks & Cars_10.mas"" -o""$CURRENTLOCATION"" "
-start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow  -Wait
-move-item "All*_10.rfm" "default.rfm" -force
-move-item "All*smicon.dds" "smicon.dds" -force
-move-item "All*icon.dds" "icon.dds" -force
+#write-host "Extracting files from All Tracks & Cars masfile."
+#$ARGUMENTS=" *.dds *.rfm -x""$RF2ROOT\Installed\rFm\All Tracks & Cars_10.mas"" -o""$CURRENTLOCATION"" "
+#start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow  -Wait
+#move-item "All*_10.rfm" "default.rfm" -force
+#move-item "All*smicon.dds" "smicon.dds" -force
+#move-item "All*icon.dds" "icon.dds" -force
 
-# build argument for modmgr
-$ARGUMENTS=" -m""$HOME\Appdata\roaming\~mastemp\$PREFIX$PLRPROFILE.mas"" ""$CURRENTLOCATION\icon.dds"" ""$CURRENTLOCATION\smicon.dds"" ""$CURRENTLOCATION\default.rfm"" "
-
-# run modmgr to build mas file
+# build argument for modmgr to build masfile
+write-host "Building "$MASFILE
+$ARGUMENTS=" -m""$HOME\Appdata\roaming\~mastemp\$MASFILE"" ""$CURRENTLOCATION\icon.dds"" ""$CURRENTLOCATION\smicon.dds"" ""$CURRENTLOCATION\default.rfm"" "
 start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow  -Wait
+
+timeout /t 3 | out-null
 
 # building mod package by using dat file and first entry in it
-write-host "Current package number is "$CURRENTPACKAGE
+write-host "Building RFMOD with dat entry "$CURRENTPACKAGE" from "$DATFILE
 $ARGUMENTS=" -c""$RF2ROOT"" -o""$RF2ROOT\Packages"" -b""$DATFILE"" $CURRENTPACKAGE "
 start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
+
+timeout /t 3 | out-null
 
 # install mod package
 # TODO: exit codes
 #$ARGUMENTS=" -p""$RF2ROOT\Packages"" -i""$RFMODFILENAME"" -c""$RF2ROOT"" "
+write-host "Installing RFMOD "$RFMODFILENAME
 $ARGUMENTS=" -i""$RFMODFILENAME"" -c""$RF2ROOT"" "
 start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
 
