@@ -13,6 +13,12 @@ $CURRENTDATE=(Get-Date -Format "yy.MMdd")
 # pwd ...
 $CURRENTLOCATION=((Get-Location).Path)
 
+# we need this for UNiX time in seconds
+[DateTimeOffset]::Now.ToUnixTimeSeconds()
+
+# set UNiX timestamp / date
+$UNIXTIME=(([DateTimeOffset](Get-Date)).ToUnixTimeSeconds())
+
 if ($args[0]) {
  # read in and identify args
  forEach ($ARGUMENT in $args) {
@@ -39,7 +45,8 @@ if (-not "$DATFILE") {
 }
 
 # replace the version in dat file
-(gc $DATFILE) -replace "^Version=.*","Version=$CURRENTDATE" | set-content -Path "$DATFILE" -Encoding ASCII
+(get-content $DATFILE) -replace "^Version=.*","Version=$CURRENTDATE" | set-content -Path "$DATFILE" -Encoding ASCII
+(get-content $DATFILE) -replace "^Date=.*","Date=$UNIXTIME" | set-content -Path "$DATFILE" -Encoding ASCII
 
 # filename of the rfmod file ... this is already in dat file ...
 $RFMODFILENAME=((gc $DATFILE | select-string -Pattern "^Location=" | select -last 1) -split("=") |select -last 1)
