@@ -14,16 +14,16 @@ $CURRENTDATE=(Get-Date -Format "yy.MMdd")
 $CURRENTLOCATION=((Get-Location).Path)
 
 if ($args[0]) {
-# read in and identify args
-forEach ($ARGUMENT in $args) {
- if ("($FILENAME | select-string '.dat')") {
-  $DATFILE=$ARGUMENT
-  $CURRENTPACKAGE=((gc $DATFILE |select-string -Pattern "CurPackage"|select -last 1) -split("=") |select -last 1)
- } else {
-  # if no profile is given as argument we will use default from variables.ps1
-  $PLRPROFILE=$ARGUMENT
+ # read in and identify args
+ forEach ($ARGUMENT in $args) {
+  if ("($FILENAME | select-string '.dat')") {
+   $DATFILE=$ARGUMENT
+   $CURRENTPACKAGE=((gc $DATFILE |select-string -Pattern "CurPackage"|select -last 1) -split("=") |select -last 1)
+  } else {
+   # if no profile is given as argument we will use default from variables.ps1
+   $PLRPROFILE=$ARGUMENT
+  }
  }
-}
 }
 
 # without a given dat file we cannot do anything
