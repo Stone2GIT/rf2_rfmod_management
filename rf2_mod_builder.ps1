@@ -22,7 +22,7 @@ $UNIXTIME=(([DateTimeOffset](Get-Date)).ToUnixTimeSeconds())
 if ($args[0]) {
  # read in and identify args
  forEach ($ARGUMENT in $args) {
-  if ("($FILENAME | select-string '.dat')") {
+  if ( $ARGUMENT | select-string '.dat' ) {
    $DATFILE=$ARGUMENT
    $CURRENTPACKAGE=((gc $DATFILE |select-string -Pattern "CurPackage"|select -last 1) -split("=") |select -last 1)
   } else {
@@ -43,6 +43,8 @@ if (-not "$DATFILE") {
   $CURRENTPACKAGE=((gc $DATFILE |select-string -Pattern "CurPackage"|select -last 1) -split("=") |select -last 1)
  }
 }
+
+write-host "Running for profile "$PLRPROFILE" using .dat file "$DATFILE
 
 # replace the version in dat file
 (get-content $DATFILE) -replace "^Version=.*","Version=$CURRENTDATE" | set-content -Path "$DATFILE" -Encoding ASCII
