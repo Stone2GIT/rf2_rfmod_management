@@ -1,0 +1,31 @@
+[Package]
+Name=SRJF-SRC-LochDrummond
+Type=0
+Version=24.0903
+BaseVersion=
+MinVersion=
+Author=Mod Team
+Date=1725393040
+ID=AAA9999
+URL=www.YourModSite.com
+Desc=Your new mod.
+Category=0
+Origin=0
+Flags=0
+CurLocation=0
+NumLocations=1
+Location=C:\Users\rfactor2\rf2ds\Packages\SRJF-SRC-240903.rfmod
+CurRFM=0
+NumRFM=1
+RFM=C:\Users\rfactor2\AppData\Roaming\~MASTEMP\\SRJF-SRC-240903.mas
+NumTrackFiles=1
+Track="SRC_LochDrummond_2024 v1.30,0" "SRC_LochDrummond_2024,1"
+NumVehicleFiles=2
+Vehicle="BMW_M6_GT3_2018 v3.61-gtw24-02,0" "SRC BMW Guest #107,1" "Simracing:Justfair #59,1"
+Vehicle="Callaway_Corvette_GT3_2017 v3.61-gtw24-03,0" "SRC Corvette Guest #108,1" "Simracing:Justfair #61,1"
+NumOtherFiles=0
+rFmFile=C:\Users\rfactor2\AppData\Roaming\~MASTEMP\default.rfm
+IconFile=C:\Users\rfactor2\AppData\Roaming\~MASTEMP\icon.dds
+SmallIconFile=C:\Users\rfactor2\AppData\Roaming\~MASTEMP\smicon.dds
+
+CurPackage=0

@@ -11,4 +11,4 @@ $RF2ROOT="$HOME\rf2ds"
 $RF2WORKSHOPPKGS="$RF2ROOT\steamapps\workshop\content\365960"
 
 # which profile to use by default
-$PLRPROFILE="player"
+$PLRPROFILE="gte"

@@ -8,7 +8,11 @@
 . .\variables.ps1
 
 # store the current date with month and day in numeric format
-$CURRENTDATE=(Get-Date -Format "yy.MMdd")
+$CURRENTDATE=(Get-Date -Format "yyMM.dd")
+$CURRENTYEAR=(Get-Date -Format "yy")
+$CURRENTMONTH=(Get-Date -Format "MM")
+$CURRENTDAY=(Get-Date -Format "dd")
+#$CURRENTDATE=[int]$CURRENTYEAR+[int]$CURRENTMONTH+[int]$CURRENTDAY
 
 # pwd ...
 $CURRENTLOCATION=((Get-Location).Path)
