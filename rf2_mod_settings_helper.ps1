@@ -1,9 +1,14 @@
 ﻿#
-# simple script to build RFMODs from dat files
+# simple script to create settings folder and .wet files for tracks from .dat file
 #
 # Stone, 03/2024, info@simracingjustfair.org
 #
 # todo:
+# - respect more than hard coded user:autosave.rrbin
+
+write-host "DO NOT USE THE SCRIPT"
+timeout /t 10
+exit 1
 
 . .\variables.ps1
 
@@ -100,7 +105,6 @@ else {
 
 }
 
-
 write-host "Building mod package for profile "$PLRPROFILE" using .dat file "$DATFILE
 
 # replace the version in dat file
@@ -116,13 +120,6 @@ $RFMFILENAME=( (($RFMODFILENAME -replace "\.rfmod","")+"_"+($CURRENTDATE -replac
 # get the filename of the original / previous used masfile
 $MASFILE=((gc $DATFILE | select-string -Pattern "^RFM=" | select -last 1) -split("\\") |select -last 1)
 
-# we need to extract and rename files from All Cars & Tracks mas file
-#write-host "Extracting files from All Tracks & Cars masfile."
-#$ARGUMENTS=" *.dds *.rfm -x""$RF2ROOT\Installed\rFm\All Tracks & Cars_10.mas"" -o""$CURRENTLOCATION"" "
-#start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow  -Wait
-#move-item "All*_10.rfm" "default.rfm" -force
-#move-item "All*smicon.dds" "smicon.dds" -force
-#move-item "All*icon.dds" "icon.dds" -force
 
 # build argument for modmgr to build masfile
 write-host "Building "$MASFILE
