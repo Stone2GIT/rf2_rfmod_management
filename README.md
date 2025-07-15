@@ -2,7 +2,18 @@
 
 ## General
 
-Scripts for (re-)building and updating rFmods.
+Scripts for (re-)building and updating rF2 mod packages using .dat info file as source - the updater will look for the 
+latest version in installed\vehicles\<vehicle> and update .dat info file and building mod package.
+
+The builder simply uses .dat info file to build mod package and generating a .wet file for the track(s) found in .dat file
+using user:autosave.rrbin as realroad setting.
+
+Both scripts are starting dedicated server once with given profile and new mod package.
+
+## Known issues
+
+- if .dat info file is NOT an ASCII file mod package build may fail
+- sometimes DS must be started manually in order to define available cars or car categories
 
 ## Disclaimer
 
@@ -12,7 +23,7 @@ Scripts provided 'as is'.
 
 - PS1 files need to be opened with editor once in order to get rid of the signing warning.
 - Layout entries of tracks will not be updated if there are new ones :-(
-- New vehicle entries will not be added :-(
+- New vehicle or track entries will not be added :-(
 
 ## Quick start guide
 
