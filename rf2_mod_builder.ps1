@@ -44,7 +44,7 @@ if (-not "$DATFILE") {
   timeout /t 10 | out-null
   exit 1
  } else {
-  $CURRENTPACKAGE=((gc $DATFILE |select-string -Pattern "CurPackage"|select -last 1) -split("=") |select -last 1)
+  $CURRENTPACKAGE=(((gc $DATFILE | select-string -Pattern "CurPackage")[0]) -split("="))[1]
  }
 }
 
