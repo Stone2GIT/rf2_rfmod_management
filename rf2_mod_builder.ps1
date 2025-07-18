@@ -28,7 +28,7 @@ if ($args[0]) {
  forEach ($ARGUMENT in $args) {
   if ( $ARGUMENT | select-string '.dat' ) {
    $DATFILE=$ARGUMENT
-   $CURRENTPACKAGE=((gc $DATFILE |select-string -Pattern "CurPackage"|select -last 1) -split("=") |select -last 1)
+   $CURRENTPACKAGE=(((gc $DATFILE | select-string -Pattern "CurPackage")[0]) -split("="))[1]
   } else {
    # if no profile is given as argument we will use default from variables.ps1
    $PLRPROFILE=$ARGUMENT
