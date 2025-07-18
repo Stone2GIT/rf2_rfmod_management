@@ -4,25 +4,28 @@
 # Stone, 03/2024, info@simracingjustfair.org
 #
 # todo:
+#
 
 . .\variables.ps1
 
 # store the current date with month and day in numeric format
+#
 $CURRENTDATE=(Get-Date -Format "yyMM.dd")
-$CURRENTYEAR=(Get-Date -Format "yy")
-$CURRENTMONTH=(Get-Date -Format "MM")
-$CURRENTDAY=(Get-Date -Format "dd")
-#$CURRENTDATE=[int]$CURRENTYEAR+[int]$CURRENTMONTH+[int]$CURRENTDAY
 
-# pwd ...
+# get current working directory ...
+#
 $CURRENTLOCATION=((Get-Location).Path)
 
 # we need this for UNiX time in seconds
+#
 [DateTimeOffset]::Now.ToUnixTimeSeconds()
 
 # set UNiX timestamp / date
+#
 $UNIXTIME=(([DateTimeOffset](Get-Date)).ToUnixTimeSeconds())
 
+# look if a profile was given on command line
+#
 if ($args[0]) {
  # read in and identify args
  forEach ($ARGUMENT in $args) {
@@ -36,7 +39,9 @@ if ($args[0]) {
  }
 }
 
-# without a given dat file we cannot do anything
+# look if a .dat file was given on command line
+# => without a given dat file we cannot do anything
+#
 if (-not "$DATFILE") {
  $DATFILE="$HOME\Appdata\Roaming\pkginfo.dat"
  if (-not (Test-Path "$DATFILE" -PathType Leaf)) {
@@ -48,17 +53,21 @@ if (-not "$DATFILE") {
  }
 }
 
-
+# create settings folder in $PLRPROFILE and .wet file for track(s)
+#
 write-host "=> Generating settings for tracks for profile "$PLRPROFILE" using .dat file "$DATFILE
 
 # look for tracks specified in .dat file
+#
 $TRACKS=(gc $DATFILE) | select-string -pattern "Track="
 
 
-# we need to extract gdb file from track layout .mas files for each track found in .dat file
+# we need to extract .gdb file from track layout .mas files for each track found in .dat file
+#
 foreach($TRACK in $TRACKS) {
 
 # if tmp exists ... remove it
+#
 if (Test-Path $CURRENTLOCATION\tmp)
  {
   write-host "=> Removing previous tmp folder"
@@ -70,6 +79,8 @@ else {
   new-item -Path $CURRENTLOCATION\tmp -ItemType Directory
  }
 
+ # get the track and their version
+ #
  $TRACK=($TRACK -split('='))
  $TRACKFOLDER=($TRACK[1] -split(' ') -replace '"','')[0]
  $TRACKVERSION=($TRACK[1] -split(' ') -replace '"','')[1]
@@ -77,10 +88,13 @@ else {
  $TRACKVERSION=($TRACKVERSION[0] -replace '^v','')
    
  # look for .mas files in each TRACKFOLDER
+ #
  $MASFILES=(Get-ChildItem "$RF2ROOT\Installed\Locations\$TRACKFOLDER\$TRACKVERSION\*.mas")
 
+ # extract the MAS file
+ #
  foreach($MASFILE in $MASFILES) {
-  write-host "=> Extracting MAS file "$MASFILE
+  write-host "=> Extracting .gdb from MAS file "$MASFILE
   $ARGUMENTS=" *.gdb -x""$MASFILE"" -o""$CURRENTLOCATION\tmp"" "
   start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow  -Wait
 
@@ -101,34 +115,45 @@ else {
 
 }
 
-
+# generating the mod package
+#
 write-host "=> Building mod package for profile "$PLRPROFILE" using .dat file "$DATFILE
 
 # replace the version in dat file
+#
 (get-content $DATFILE) -replace "^Version=.*","Version=$CURRENTDATE" | set-content -Path "$DATFILE" -Encoding ASCII
 (get-content $DATFILE) -replace "^Date=.*","Date=$UNIXTIME" | set-content -Path "$DATFILE" -Encoding ASCII
 
 # filename of the rfmod file ... this is already in dat file ...
+#
 $RFMODFILENAME=((gc $DATFILE | select-string -Pattern "^Location=" | select -last 1) -split("=") |select -last 1)
 
 # filename of the manifest
+#
 $RFMFILENAME=( (($RFMODFILENAME -replace "\.rfmod","")+"_"+($CURRENTDATE -replace "\.","")+".rfm") -split("\\")| select -last 1 )
 
 # get the filename of the original / previous used masfile
+#
 $MASFILE=((gc $DATFILE | select-string -Pattern "^RFM=" | select -last 1) -split("\\") |select -last 1)
 
 # build argument for modmgr to build masfile
-write-host "=> Building "$MASFILE
+#
+write-host "=> Building MAS file "$MASFILE
 $ARGUMENTS=" -m""$HOME\Appdata\roaming\~mastemp\$MASFILE"" ""$CURRENTLOCATION\icon.dds"" ""$CURRENTLOCATION\smicon.dds"" ""$CURRENTLOCATION\default.rfm"" "
 start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow  -Wait
 
+# give the filesystem cache a little time
+#
 timeout /t 3 | out-null
 
 # building mod package by using dat file and first entry in it
+#
 write-host "=> Building RFMOD with dat entry "$CURRENTPACKAGE" from "$DATFILE
 $ARGUMENTS=" -c""$RF2ROOT"" -o""$RF2ROOT\Packages"" -b""$DATFILE"" $CURRENTPACKAGE "
 start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
 
+# give the filesystem cache a little time
+#
 timeout /t 3 | out-null
 
 # install mod package
@@ -138,14 +163,15 @@ write-host "=> Installing RFMOD "$RFMODFILENAME
 $ARGUMENTS=" -i""$RFMODFILENAME"" -c""$RF2ROOT"" "
 start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
 
-# start the mod ...
+# start the dedicated server with the mod ...
+#
 $ARGUMENTS=" +profile=$PLRPROFILE +rfm=""$RFMFILENAME"" +oneclick"
 
-# we need to be in RF2ROOT
 cd $RF2ROOT
  write-host "=> Starting rF2 dedicated server"
  start-process -FilePath "$RF2ROOT\bin64\rFactor2 Dedicated.exe" -ArgumentList $ARGUMENTS -NoNewWindow
 cd $CURRENTLOCATION
 
 # keep the window open to see error messages ...
-timeout /t 10
+#
+timeout /t 300
