@@ -150,6 +150,11 @@ write-host "=> Building RFMOD with dat entry "$CURRENTPACKAGE" from "$DATFILE
  $ARGUMENTS=" -c""$RF2ROOT"" -o""$RF2ROOT\Packages"" -b""$DATFILE"" $CURRENTPACKAGE "
  start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
 
+# deleting the Dedicated.ini file will make the DS create a new one with all tracks available
+#
+write-host "=> Deleting dedicated.ini file"
+ remove-item -Path "$RF2ROOT\Userdata\$PLRPROFILE\Dedicated(($RFMODFILENAME -replace '\.rfmod','') -split('\\') | select -last 1).ini"
+
 # give the filesystem cache a little time
 #
 timeout /t 3 | out-null
@@ -163,7 +168,7 @@ write-host "=> Installing RFMOD "$RFMODFILENAME
 
 # start the dedicated server with the mod ...
 #
-$ARGUMENTS=" +profile=$PLRPROFILE +rfm=""$RFMFILENAME"" +oneclick"
+$ARGUMENTS=" +profile=$PLRPROFILE +rfm=""$RFMFILENAME"" +oneclick +nowindow"
 
 cd $RF2ROOT
  write-host "=> Starting rF2 dedicated server"
