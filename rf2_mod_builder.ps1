@@ -163,7 +163,7 @@ write-host "=> Installing RFMOD "$RFMODFILENAME
 
 # start the dedicated server with the mod ...
 #
-$ARGUMENTS=" +profile=$PLRPROFILE +rfm=""$RFMFILENAME"" +oneclick"
+$ARGUMENTS=" +profile=$PLRPROFILE +rfm=""$RFMFILENAME"" +oneclick +nowindow"
 
 cd $RF2ROOT
  write-host "=> Starting rF2 dedicated server"
