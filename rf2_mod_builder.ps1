@@ -1,5 +1,5 @@
 ﻿#
-# simple script to build RFMODs from dat files
+# simple script to build RFMODs from .dat file
 #
 # Stone, 03/2024, info@simracingjustfair.org
 #
@@ -61,42 +61,43 @@ write-host "=> Generating settings for tracks for profile "$PLRPROFILE" using .d
 #
 $TRACKS=(gc $DATFILE) | select-string -pattern "Track="
 
-
 # we need to extract .gdb file from track layout .mas files for each track found in .dat file
 #
 foreach($TRACK in $TRACKS) {
 
-# if tmp exists ... remove it
-#
-if (Test-Path $CURRENTLOCATION\tmp)
- {
-  write-host "=> Removing previous tmp folder"
-  remove-Item -Recurse $CURRENTLOCATION\tmp
-  new-item -Path $CURRENTLOCATION\tmp -ItemType Directory
- }
-else {
-  write-host "=> Creating tmp folder"
-  new-item -Path $CURRENTLOCATION\tmp -ItemType Directory
- }
-
- # get the track and their version
+ # if content in tmp exists ... remove it
  #
- $TRACK=($TRACK -split('='))
- $TRACKFOLDER=($TRACK[1] -split(' ') -replace '"','')[0]
- $TRACKVERSION=($TRACK[1] -split(' ') -replace '"','')[1]
- $TRACKVERSION=($TRACKVERSION -split(','))
- $TRACKVERSION=($TRACKVERSION[0] -replace '^v','')
+ if (Test-Path $CURRENTLOCATION\tmp) {
+   write-host "=> Removing previous content in tmp folder"
+   remove-Item -Recurse $CURRENTLOCATION\tmp\*
+  }
+ else {
+   write-host "=> Creating tmp folder"
+   new-item -Path $CURRENTLOCATION\tmp -ItemType Directory
+  }
+
+  # get the track and their version
+  #
+  $TRACK=($TRACK -split('='))
+  $TRACKFOLDER=($TRACK[1] -split(' ') -replace '"','')[0]
+  $TRACKVERSION=($TRACK[1] -split(' ') -replace '"','')[1]
+  $TRACKVERSION=($TRACKVERSION -split(','))
+  $TRACKVERSION=($TRACKVERSION[0] -replace '^v','')
+
+  # count layouts of a track
+  #
+  # ((((gc .\example.dat| select-string -pattern "Track=")) -split('" ')) -replace('"','')|measure).count
    
- # look for .mas files in each TRACKFOLDER
- #
- $MASFILES=(Get-ChildItem "$RF2ROOT\Installed\Locations\$TRACKFOLDER\$TRACKVERSION\*.mas")
+  # look for .mas files in each TRACKFOLDER
+  #
+  $MASFILES=(Get-ChildItem "$RF2ROOT\Installed\Locations\$TRACKFOLDER\$TRACKVERSION\*.mas")
 
- # extract the MAS file
- #
- foreach($MASFILE in $MASFILES) {
-  write-host "=> Extracting .gdb from MAS file "$MASFILE
-  $ARGUMENTS=" *.gdb -x""$MASFILE"" -o""$CURRENTLOCATION\tmp"" "
-  start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow  -Wait
+  # extract the .gdb files from the MAS file
+  #
+  foreach($MASFILE in $MASFILES) {
+   write-host "=> Extracting .gdb from MAS file "$MASFILE
+   $ARGUMENTS=" *.gdb -x""$MASFILE"" -o""$CURRENTLOCATION\tmp"" "
+   start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow  -Wait
 
    write-host "=> Analyzing .gdb files"
    $GDBFILES=(Get-ChildItem "$CURRENTLOCATION\tmp\*.gdb")
@@ -106,13 +107,10 @@ else {
     $TRACKLAYOUT=(gc $GDBFILE)[0]
     $TRACKSETTINGSFOLDER=(((gc $GDBFILE| select-string -pattern "Settingsfolder") -split("="))[1]) -replace(' ','')
 
-    if (! (Test-Path $RF2ROOT\Userdata\$PLRPROFILE\Settings\$TRACKSETTINGSFOLDER)) { new-item -Path $RF2ROOT\Userdata\$PLRPROFILE\Settings\$TRACKSETTINGSFOLDER -ItemType Directory }
-    Copy-Item $CURRENTLOCATION\template.wet $RF2ROOT\Userdata\$PLRPROFILE\Settings\$TRACKSETTINGSFOLDER\${TRACKLAYOUT}s.wet
+     if (! (Test-Path $RF2ROOT\Userdata\$PLRPROFILE\Settings\$TRACKSETTINGSFOLDER)) { new-item -Path $RF2ROOT\Userdata\$PLRPROFILE\Settings\$TRACKSETTINGSFOLDER -ItemType Directory }
+     Copy-Item $CURRENTLOCATION\template.wet $RF2ROOT\Userdata\$PLRPROFILE\Settings\$TRACKSETTINGSFOLDER\${TRACKLAYOUT}s.wet
    }
-
-
  }
-
 }
 
 # generating the mod package
@@ -139,8 +137,8 @@ $MASFILE=((gc $DATFILE | select-string -Pattern "^RFM=" | select -last 1) -spli
 # build argument for modmgr to build masfile
 #
 write-host "=> Building MAS file "$MASFILE
-$ARGUMENTS=" -m""$HOME\Appdata\roaming\~mastemp\$MASFILE"" ""$CURRENTLOCATION\icon.dds"" ""$CURRENTLOCATION\smicon.dds"" ""$CURRENTLOCATION\default.rfm"" "
-start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow  -Wait
+ $ARGUMENTS=" -m""$HOME\Appdata\roaming\~mastemp\$MASFILE"" ""$CURRENTLOCATION\icon.dds"" ""$CURRENTLOCATION\smicon.dds"" ""$CURRENTLOCATION\default.rfm"" "
+ start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow  -Wait
 
 # give the filesystem cache a little time
 #
@@ -149,8 +147,8 @@ timeout /t 3 | out-null
 # building mod package by using dat file and first entry in it
 #
 write-host "=> Building RFMOD with dat entry "$CURRENTPACKAGE" from "$DATFILE
-$ARGUMENTS=" -c""$RF2ROOT"" -o""$RF2ROOT\Packages"" -b""$DATFILE"" $CURRENTPACKAGE "
-start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
+ $ARGUMENTS=" -c""$RF2ROOT"" -o""$RF2ROOT\Packages"" -b""$DATFILE"" $CURRENTPACKAGE "
+ start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
 
 # give the filesystem cache a little time
 #
@@ -160,8 +158,8 @@ timeout /t 3 | out-null
 # TODO: exit codes
 #$ARGUMENTS=" -p""$RF2ROOT\Packages"" -i""$RFMODFILENAME"" -c""$RF2ROOT"" "
 write-host "=> Installing RFMOD "$RFMODFILENAME
-$ARGUMENTS=" -i""$RFMODFILENAME"" -c""$RF2ROOT"" "
-start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
+ $ARGUMENTS=" -i""$RFMODFILENAME"" -c""$RF2ROOT"" "
+ start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
 
 # start the dedicated server with the mod ...
 #
