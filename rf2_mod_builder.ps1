@@ -153,7 +153,8 @@ write-host "=> Building RFMOD with dat entry "$CURRENTPACKAGE" from "$DATFILE
 # deleting the Dedicated.ini file will make the DS create a new one with all tracks available
 #
 write-host "=> Deleting dedicated.ini file"
- remove-item -Path "$RF2ROOT\Userdata\$PLRPROFILE\Dedicated(($RFMODFILENAME -replace '\.rfmod','') -split('\\') | select -last 1).ini"
+ #remove-item -Path "$RF2ROOT\Userdata\$PLRPROFILE\Dedicated(($RFMODFILENAME -replace '\.rfmod','') -split('\\') | select -last 1).ini"
+ remove-item -Path "$RF2ROOT\Userdata\$PLRPROFILE\Dedicated*.ini"
 
 # give the filesystem cache a little time
 #
