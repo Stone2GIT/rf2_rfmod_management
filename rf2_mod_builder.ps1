@@ -108,7 +108,10 @@ foreach($TRACK in $TRACKS) {
     $TRACKSETTINGSFOLDER=(((gc $GDBFILE| select-string -pattern "Settingsfolder") -split("="))[1]) -replace(' ','')
 
      if (! (Test-Path $RF2ROOT\Userdata\$PLRPROFILE\Settings\$TRACKSETTINGSFOLDER)) { new-item -Path $RF2ROOT\Userdata\$PLRPROFILE\Settings\$TRACKSETTINGSFOLDER -ItemType Directory }
-     Copy-Item $CURRENTLOCATION\template.wet $RF2ROOT\Userdata\$PLRPROFILE\Settings\$TRACKSETTINGSFOLDER\${TRACKLAYOUT}s.wet
+     # this would convert template.wet to ASCII if it has been changed 
+     #
+     (get-content $CURRENTLOCATION\template.wet) | set-content -Path "$RF2ROOT\Userdata\$PLRPROFILE\Settings\$TRACKSETTINGSFOLDER\${TRACKLAYOUT}s.wet" -Encoding ASCII
+     #Copy-Item $CURRENTLOCATION\template.wet $RF2ROOT\Userdata\$PLRPROFILE\Settings\$TRACKSETTINGSFOLDER\${TRACKLAYOUT}s.wet
    }
  }
 }
@@ -153,8 +156,9 @@ write-host "=> Building RFMOD with dat entry "$CURRENTPACKAGE" from "$DATFILE
 # deleting the Dedicated.ini file will make the DS create a new one with all tracks available
 #
 write-host "=> Deleting dedicated.ini file"
+ $FILENAMEPART=(($RFMODFILENAME -replace '\.rfmod','') -split('\\') | select -last 1)
  #remove-item -Path "$RF2ROOT\Userdata\$PLRPROFILE\Dedicated(($RFMODFILENAME -replace '\.rfmod','') -split('\\') | select -last 1).ini"
- remove-item -Path "$RF2ROOT\Userdata\$PLRPROFILE\Dedicated*.ini"
+ remove-item -Path "$RF2ROOT\Userdata\$PLRPROFILE\Dedicated$FILENAMEPART.ini"
 
 # give the filesystem cache a little time
 #
