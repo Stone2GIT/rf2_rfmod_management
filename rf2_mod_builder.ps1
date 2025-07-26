@@ -7,6 +7,7 @@
 #
 # Updates 2025/26/07
 #
+# - change $PLRPROFILE.json to realroad rubber build up of value 10
 # - customizing .dat file
 # - making $RFMODFILENAME and $RFMODNAME unique using UNiX time
 #
