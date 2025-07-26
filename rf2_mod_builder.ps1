@@ -140,6 +140,7 @@ $RFMODFILENAME=modbuilder$UNIXTIME.rfmod
 (get-content $DATFILE) -replace "^Author=.*","Author=Stone from simracingjustfair.org" | set-content -Path $DATFILE -Encoding ASCII
 (get-content $DATFILE) -replace "^URL=.*","URL=simracingjustfair.org" | set-content -Path $DATFILE -Encoding ASCII
 (get-content $DATFILE) -replace "^Desc=.*","Desc=rFactor 2 Dedicated Server Mod built with rF2_rfmod_builder.ps1" | set-content -Path $DATFILE -Encoding ASCII
+(get-content $DATFILE) -replace "^Name=.*","Name=$RFMODNAME" | set-content -Path $DATFILE -Encoding ASCII
 
 # filename of the manifest
 #
