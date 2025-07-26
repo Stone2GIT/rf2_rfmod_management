@@ -127,20 +127,21 @@ write-host "`r`n`r`n=> Building mod package for profile "$PLRPROFILE" using .dat
 
 # generate filename for the rfmod file
 #
-$RFMODNAME=modbuilder$UNIXTIME
-$RFMODFILENAME=modbuilder$UNIXTIME.rfmod
+$RFMODNAME=modbuilder-$UNIXTIME
+$RFMODFILENAME=modbuilder-$UNIXTIME.rfmod
 
 ######################################
 #
 # change some parameters in .dat file
 #
-(get-content $DATFILE) -replace "^Version=.*","Version=$CURRENTDATE" | set-content -Path "$DATFILE" -Encoding ASCII
-(get-content $DATFILE) -replace "^Date=.*","Date=$UNIXTIME" | set-content -Path "$DATFILE" -Encoding ASCII
-(get-content $DATFILE) -replace "^Location=.*","Location=$RF2ROOT\Packages\$RFMODFILENAME" | set-content -Path $DATFILE -Encoding ASCII
-(get-content $DATFILE) -replace "^Author=.*","Author=Stone from simracingjustfair.org" | set-content -Path $DATFILE -Encoding ASCII
-(get-content $DATFILE) -replace "^URL=.*","URL=simracingjustfair.org" | set-content -Path $DATFILE -Encoding ASCII
-(get-content $DATFILE) -replace "^Desc=.*","Desc=rFactor 2 Dedicated Server Mod built with rF2_rfmod_builder.ps1" | set-content -Path $DATFILE -Encoding ASCII
-(get-content $DATFILE) -replace "^Name=.*","Name=$RFMODNAME" | set-content -Path $DATFILE -Encoding ASCII
+(get-content $DATFILE) \
+	-replace "^Version=.*","Version=$CURRENTDATE" | set-content -Path "$DATFILE" -Encoding ASCII \
+	-replace "^Date=.*","Date=$UNIXTIME" | set-content -Path "$DATFILE" -Encoding ASCII \
+	-replace "^Location=.*","Location=$RF2ROOT\Packages\$RFMODFILENAME" | set-content -Path $DATFILE -Encoding ASCII \
+	-replace "^Author=.*","Author=Stone" | set-content -Path $DATFILE -Encoding ASCII \
+	-replace "^URL=.*","URL=simracingjustfair.org" | set-content -Path $DATFILE -Encoding ASCII \
+	-replace "^Desc=.*","Desc=rFactor 2 Dedicated Server Mod built with rF2_rfmod_builder.ps1" | set-content -Path $DATFILE -Encoding ASCII \
+	-replace "^Name=.*","Name=$RFMODNAME" | set-content -Path $DATFILE -Encoding ASCII
 
 # filename of the manifest
 #
