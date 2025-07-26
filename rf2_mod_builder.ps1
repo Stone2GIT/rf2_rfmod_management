@@ -191,7 +191,7 @@ $ARGUMENTS=" +profile=$PLRPROFILE +rfm=""$RFMFILENAME"" +oneclick"
 
 cd $RF2ROOT
  write-host "`r`n`r`n=> Starting rF2 dedicated server"
- start-process -FilePath "$RF2ROOT\bin64\rFactor2 Dedicated.exe" -ArgumentList $ARGUMENTS -NoNewWindow
+# start-process -FilePath "$RF2ROOT\bin64\rFactor2 Dedicated.exe" -ArgumentList $ARGUMENTS -NoNewWindow
 cd $CURRENTLOCATION
 
 # keep the window open to see error messages ...
