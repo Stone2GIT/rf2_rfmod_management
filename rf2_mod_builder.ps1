@@ -3,6 +3,13 @@
 #
 # Stone, 03/2024, info@simracingjustfair.org
 #
+# GitHub: github.com/Stone2GIT
+#
+# Updates 2025/26/07
+#
+# - customizing .dat file
+# - making $RFMODFILENAME and $RFMODNAME unique using UNiX time
+#
 # Updates until 2025/26/07
 #
 # - weather file in UserData\$PLRPROFILE\Settings\$TRACKLAYOUT
