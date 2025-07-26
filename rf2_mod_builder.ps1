@@ -1,9 +1,15 @@
 ﻿#
-# simple script to build RFMODs from .dat file
+# script to build RFMODs from .dat file
 #
 # Stone, 03/2024, info@simracingjustfair.org
 #
-# todo:
+# Updates until 2025/26/07
+#
+# - weather file in UserData\$PLRPROFILE\Settings\$TRACKLAYOUT
+#   generated for packed tracks layout with user:autosave.rrbin
+# - dedicated.ini file in UserData\$PLRPROFILE
+#   dedicated<modname>.ini is deleted in order to let be created by dedicated server 
+# - added some status messages
 #
 
 . .\variables.ps1
@@ -45,7 +51,7 @@ if ($args[0]) {
 if (-not "$DATFILE") {
  $DATFILE="$HOME\Appdata\Roaming\pkginfo.dat"
  if (-not (Test-Path "$DATFILE" -PathType Leaf)) {
-  write-host "=> Sorry, but we need a dat file at least given as argument or in appdata ..."
+  write-host "`r`n`r`n=> Sorry, but we need a dat file at least given as argument or in appdata ..."
   timeout /t 10 | out-null
   exit 1
  } else {
@@ -55,7 +61,7 @@ if (-not "$DATFILE") {
 
 # create settings folder in $PLRPROFILE and .wet file for track(s)
 #
-write-host "=> Generating settings for tracks for profile "$PLRPROFILE" using .dat file "$DATFILE
+write-host "`r`n`r`n=> Generating settings for tracks for profile "$PLRPROFILE" using .dat file "$DATFILE
 
 # look for tracks specified in .dat file
 #
@@ -68,11 +74,11 @@ foreach($TRACK in $TRACKS) {
  # if content in tmp exists ... remove it
  #
  if (Test-Path $CURRENTLOCATION\tmp) {
-   write-host "=> Removing previous content in tmp folder"
+   write-host "`r`n`r`n=> Removing previous content in tmp folder"
    remove-Item -Recurse $CURRENTLOCATION\tmp\*
   }
  else {
-   write-host "=> Creating tmp folder"
+   write-host "`r`n`r`n=> Creating tmp folder"
    new-item -Path $CURRENTLOCATION\tmp -ItemType Directory
   }
 
@@ -95,11 +101,11 @@ foreach($TRACK in $TRACKS) {
   # extract the .gdb files from the MAS file
   #
   foreach($MASFILE in $MASFILES) {
-   write-host "=> Extracting .gdb from MAS file "$MASFILE
+   write-host "`r`n`r`n=> Extracting .gdb from MAS file "$MASFILE
    $ARGUMENTS=" *.gdb -x""$MASFILE"" -o""$CURRENTLOCATION\tmp"" "
    start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow  -Wait
 
-   write-host "=> Analyzing .gdb files"
+   write-host "`r`n`r`n=> Analyzing .gdb files"
    $GDBFILES=(Get-ChildItem "$CURRENTLOCATION\tmp\*.gdb")
 
    foreach($GDBFILE in $GDBFILES) {
@@ -111,23 +117,29 @@ foreach($TRACK in $TRACKS) {
      # this would convert template.wet to ASCII if it has been changed 
      #
      (get-content $CURRENTLOCATION\template.wet) | set-content -Path "$RF2ROOT\Userdata\$PLRPROFILE\Settings\$TRACKSETTINGSFOLDER\${TRACKLAYOUT}s.wet" -Encoding ASCII
-     #Copy-Item $CURRENTLOCATION\template.wet $RF2ROOT\Userdata\$PLRPROFILE\Settings\$TRACKSETTINGSFOLDER\${TRACKLAYOUT}s.wet
    }
  }
 }
 
 # generating the mod package
 #
-write-host "=> Building mod package for profile "$PLRPROFILE" using .dat file "$DATFILE
+write-host "`r`n`r`n=> Building mod package for profile "$PLRPROFILE" using .dat file "$DATFILE
 
-# replace the version in dat file
+# generate filename for the rfmod file
+#
+$RFMODNAME=modbuilder$UNIXTIME
+$RFMODFILENAME=modbuilder$UNIXTIME.rfmod
+
+######################################
+#
+# change some parameters in .dat file
 #
 (get-content $DATFILE) -replace "^Version=.*","Version=$CURRENTDATE" | set-content -Path "$DATFILE" -Encoding ASCII
 (get-content $DATFILE) -replace "^Date=.*","Date=$UNIXTIME" | set-content -Path "$DATFILE" -Encoding ASCII
-
-# filename of the rfmod file ... this is already in dat file ...
-#
-$RFMODFILENAME=((gc $DATFILE | select-string -Pattern "^Location=" | select -last 1) -split("=") |select -last 1)
+(get-content $DATFILE) -replace "^Location=.*","Location=$RF2ROOT\Packages\$RFMODFILENAME" | set-content -Path $DATFILE -Encoding ASCII
+(get-content $DATFILE) -replace "^Author=.*","Author=Stone from simracingjustfair.org" | set-content -Path $DATFILE -Encoding ASCII
+(get-content $DATFILE) -replace "^URL=.*","URL=simracingjustfair.org" | set-content -Path $DATFILE -Encoding ASCII
+(get-content $DATFILE) -replace "^Desc=.*","Desc=rFactor 2 Dedicated Server Mod built with rF2_rfmod_builder.ps1" | set-content -Path $DATFILE -Encoding ASCII
 
 # filename of the manifest
 #
@@ -135,11 +147,12 @@ $RFMFILENAME=( (($RFMODFILENAME -replace "\.rfmod","")+"_"+($CURRENTDATE -replac
 
 # get the filename of the original / previous used masfile
 #
-$MASFILE=((gc $DATFILE | select-string -Pattern "^RFM=" | select -last 1) -split("\\") |select -last 1)
+#$MASFILE=((gc $DATFILE | select-string -Pattern "^RFM=" | select -last 1) -split("\\") |select -last 1)
+$MASFILE=$RFMODNAME
 
 # build argument for modmgr to build masfile
 #
-write-host "=> Building MAS file "$MASFILE
+write-host "`r`n`r`n=> Building MAS file "$MASFILE
  $ARGUMENTS=" -m""$HOME\Appdata\roaming\~mastemp\$MASFILE"" ""$CURRENTLOCATION\icon.dds"" ""$CURRENTLOCATION\smicon.dds"" ""$CURRENTLOCATION\default.rfm"" "
  start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow  -Wait
 
@@ -149,13 +162,13 @@ timeout /t 3 | out-null
 
 # building mod package by using dat file and first entry in it
 #
-write-host "=> Building RFMOD with dat entry "$CURRENTPACKAGE" from "$DATFILE
+write-host "`r`n`r`n=> Building RFMOD with dat entry "$CURRENTPACKAGE" from "$DATFILE
  $ARGUMENTS=" -c""$RF2ROOT"" -o""$RF2ROOT\Packages"" -b""$DATFILE"" $CURRENTPACKAGE "
  start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
 
 # deleting the Dedicated.ini file will make the DS create a new one with all tracks available
 #
-write-host "=> Deleting dedicated.ini file"
+write-host "`r`n`r`n=> Deleting dedicated.ini file"
  $FILENAMEPART=(($RFMODFILENAME -replace '\.rfmod','') -split('\\') | select -last 1)
  #remove-item -Path "$RF2ROOT\Userdata\$PLRPROFILE\Dedicated(($RFMODFILENAME -replace '\.rfmod','') -split('\\') | select -last 1).ini"
  remove-item -Path "$RF2ROOT\Userdata\$PLRPROFILE\Dedicated$FILENAMEPART.ini"
@@ -167,16 +180,16 @@ timeout /t 3 | out-null
 # install mod package
 # TODO: exit codes
 #$ARGUMENTS=" -p""$RF2ROOT\Packages"" -i""$RFMODFILENAME"" -c""$RF2ROOT"" "
-write-host "=> Installing RFMOD "$RFMODFILENAME
+write-host "`r`n`r`n=> Installing RFMOD "$RFMODFILENAME
  $ARGUMENTS=" -i""$RFMODFILENAME"" -c""$RF2ROOT"" "
  start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
 
 # start the dedicated server with the mod ...
 #
-$ARGUMENTS=" +profile=$PLRPROFILE +rfm=""$RFMFILENAME"" +oneclick +nowindow"
+$ARGUMENTS=" +profile=$PLRPROFILE +rfm=""$RFMFILENAME"" +oneclick"
 
 cd $RF2ROOT
- write-host "=> Starting rF2 dedicated server"
+ write-host "`r`n`r`n=> Starting rF2 dedicated server"
  start-process -FilePath "$RF2ROOT\bin64\rFactor2 Dedicated.exe" -ArgumentList $ARGUMENTS -NoNewWindow
 cd $CURRENTLOCATION
 
