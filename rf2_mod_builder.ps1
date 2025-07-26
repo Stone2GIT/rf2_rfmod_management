@@ -128,6 +128,10 @@ foreach($TRACK in $TRACKS) {
  }
 }
 
+# increase rubber build up
+#
+(gc $RF2ROOT\UserData\$PLRPROFILE\$PLRPROFILE.json) -replace '"RealRoadTimeScalePractice":.*','"RealRoadTimeScalePractice":10' | set-content -Path $RF2ROOT\UserData\$PLRPROFILE\$PLRPROFILE.json -Encoding ASCII
+
 # generating the mod package
 #
 write-host "`r`n`r`n=> Building mod package for profile "$PLRPROFILE" using .dat file "$DATFILE
