@@ -39,3 +39,9 @@ Scripts provided 'as is'.
 ### rf2\_mod\_updater
 
 5. run rf2\_mod\_updater with <profile> and <datfile> as argument, e.g. rf2\_mod\_updater.ps1 player sample.dat
+
+## Features
+
+Not sure if it should be called Features … the builder generates a weather (.wet) file with Autosave enabled for realroad feature,
+Setting realroad factor to 10, deleting Dedicated Server ini file in order to make DS generate it from Scratch (makes all tracks listed available)
+and does some informational modification to .dat file given on command line.
