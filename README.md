@@ -30,7 +30,7 @@ Scripts provided 'as is'.
 1. download the repository
 2. open .ps1 files with editor once
 3. configure RF2ROOT in variables.ps1
-4. generate dat file from or simply use $HOME/Appdata/Roaming/pkginfo.dat
+4. generate .dat file with mastool and use (or copy from) $HOME/Appdata/Roaming/pkginfo.dat
 
 ### rf2\_mod\_builder
 
