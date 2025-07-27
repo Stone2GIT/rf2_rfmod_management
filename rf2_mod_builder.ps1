@@ -82,11 +82,11 @@ foreach($TRACK in $TRACKS) {
  # if content in tmp exists ... remove it
  #
  if (Test-Path $CURRENTLOCATION\tmp) {
-   write-host "`r`n`r`n=> Removing previous content in tmp folder"
+   write-host "`r`n=> Removing previous content in tmp folder"
    remove-Item -Recurse $CURRENTLOCATION\tmp\*
   }
  else {
-   write-host "`r`n`r`n=> Creating tmp folder"
+   write-host "`r`n=> Creating tmp folder"
    new-item -Path $CURRENTLOCATION\tmp -ItemType Directory
   }
 
@@ -113,7 +113,7 @@ foreach($TRACK in $TRACKS) {
    $ARGUMENTS=" *.gdb -x""$MASFILE"" -o""$CURRENTLOCATION\tmp"" "
    start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow  -Wait
 
-   write-host "`r`n`r`n=> Analyzing .gdb files"
+   write-host "`r`n=> Analyzing .gdb files"
    $GDBFILES=(Get-ChildItem "$CURRENTLOCATION\tmp\*.gdb")
 
    foreach($GDBFILE in $GDBFILES) {
@@ -139,30 +139,39 @@ write-host "`r`n`r`n=> Building mod package for profile "$PLRPROFILE" using .dat
 
 # generate filename for the rfmod file
 #
-$RFMODNAME=modbuilder-$UNIXTIME
-$RFMODFILENAME=modbuilder-$UNIXTIME.rfmod
+$RFMODNAME="modbuilder-$UNIXTIME"
+$RFMODFILENAME="modbuilder-$UNIXTIME.rfmod"
+
+# filename of the manifest
+#
+$RFMFILENAME=( (($RFMODFILENAME -replace "\.rfmod","")+"_"+($CURRENTDATE -replace "\.","")+".rfm") -split("\\")| select -last 1 )
+#$RFMFILENAME="$RFMODNAME.rfm"
+
+# get the filename of the original / previous used masfile
+#
+#$MASFILE=((gc $DATFILE | select-string -Pattern "^RFM=" | select -last 1) -split("\\") |select -last 1)
+$MASFILE="$RFMODNAME.mas"
 
 ######################################
 #
 # change some parameters in .dat file
 #
-(get-content $DATFILE) `
-	-replace "^Version=.*","Version=$CURRENTDATE" | set-content -Path "$DATFILE" -Encoding ASCII `
-	-replace "^Date=.*","Date=$UNIXTIME" | set-content -Path "$DATFILE" -Encoding ASCII `
-	-replace "^Location=.*","Location=$RF2ROOT\Packages\$RFMODFILENAME" | set-content -Path $DATFILE -Encoding ASCII `
-	-replace "^Author=.*","Author=Stone" | set-content -Path $DATFILE -Encoding ASCII `
-	-replace "^URL=.*","URL=simracingjustfair.org" | set-content -Path $DATFILE -Encoding ASCII `
-	-replace "^Desc=.*","Desc=rFactor 2 Dedicated Server Mod built with rF2_rfmod_builder.ps1" | set-content -Path $DATFILE -Encoding ASCII `
-	-replace "^Name=.*","Name=$RFMODNAME" | set-content -Path $DATFILE -Encoding ASCII
+#(get-content $DATFILE) -replace "^Version=.*","Version=$CURRENTDATE" | set-content -Path "$DATFILE" -Encoding ASCII
+#(get-content $DATFILE) -replace "^Date=.*","Date=$UNIXTIME" | set-content -Path "$DATFILE" -Encoding ASCII
+#(get-content $DATFILE) -replace "^Location=.*","Location=$RF2ROOT\Packages\$RFMODFILENAME" | set-content -Path $DATFILE -Encoding ASCII
+#(get-content $DATFILE) -replace "^Author=.*","Author=Stone" | set-content -Path $DATFILE -Encoding ASCII
+#(get-content $DATFILE) -replace "^URL=.*","URL=simracingjustfair.org" | set-content -Path $DATFILE -Encoding ASCII
+#(get-content $DATFILE) -replace "^Desc=.*","Desc=rFactor 2 Dedicated Server Mod built with rF2_rfmod_builder.ps1" | set-content -Path $DATFILE -Encoding ASCII
+#(get-content $DATFILE) -replace "^Name=.*","Name=$RFMODNAME" | set-content -Path $DATFILE -Encoding ASCII
 
-# filename of the manifest
-#
-$RFMFILENAME=( (($RFMODFILENAME -replace "\.rfmod","")+"_"+($CURRENTDATE -replace "\.","")+".rfm") -split("\\")| select -last 1 )
-
-# get the filename of the original / previous used masfile
-#
-#$MASFILE=((gc $DATFILE | select-string -Pattern "^RFM=" | select -last 1) -split("\\") |select -last 1)
-$MASFILE=$RFMODNAME
+(get-content $DATFILE) -replace "^Version=.*","Version=$CURRENTDATE" `
+ -replace "^Date=.*","Date=$UNIXTIME" `
+ -replace "^Location=.*","Location=$RF2ROOT\Packages\$RFMODFILENAME" `
+ -replace "^Author=.*","Author=Stone" `
+ -replace "^URL=.*","URL=simracingjustfair.org" `
+ -replace "^Desc=.*","Desc=rFactor 2 Dedicated Server Mod built with rF2_rfmod_builder" `
+ -replace "^RFM=.*","RFM=$HOME\Appdata\roaming\~mastemp\$MASFILE" `
+ -replace "^Name=.*","Name=$RFMODNAME" | set-content -Path $DATFILE -Encoding ASCII
 
 # build argument for modmgr to build masfile
 #
@@ -185,28 +194,26 @@ write-host "`r`n`r`n=> Building RFMOD with dat entry "$CURRENTPACKAGE" from "$DA
 write-host "`r`n`r`n=> Deleting dedicated.ini file"
  $FILENAMEPART=(($RFMODFILENAME -replace '\.rfmod','') -split('\\') | select -last 1)
  #remove-item -Path "$RF2ROOT\Userdata\$PLRPROFILE\Dedicated(($RFMODFILENAME -replace '\.rfmod','') -split('\\') | select -last 1).ini"
- remove-item -Path "$RF2ROOT\Userdata\$PLRPROFILE\Dedicated$FILENAMEPART.ini"
+ #remove-item -Path "$RF2ROOT\Userdata\$PLRPROFILE\Dedicated$FILENAMEPART.ini"
+ remove-item -Path "$RF2ROOT\Userdata\$PLRPROFILE\Dedicated*.ini"
 
 # give the filesystem cache a little time
 #
 timeout /t 3 | out-null
 
+
 # install mod package
 # TODO: exit codes
 #$ARGUMENTS=" -p""$RF2ROOT\Packages"" -i""$RFMODFILENAME"" -c""$RF2ROOT"" "
 write-host "`r`n`r`n=> Installing RFMOD "$RFMODFILENAME
- $ARGUMENTS=" -i""$RFMODFILENAME"" -c""$RF2ROOT"" "
+ $ARGUMENTS=" -p""$RF2ROOT\Packages"" -i""$RFMODFILENAME"" -c""$RF2ROOT"" "
  start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
-
+ 
 # start the dedicated server with the mod ...
 #
+$RFMFILENAME
 $ARGUMENTS=" +profile=$PLRPROFILE +rfm=""$RFMFILENAME"" +oneclick"
-
 cd $RF2ROOT
  write-host "`r`n`r`n=> Starting rF2 dedicated server"
  start-process -FilePath "$RF2ROOT\bin64\rFactor2 Dedicated.exe" -ArgumentList $ARGUMENTS -NoNewWindow
 cd $CURRENTLOCATION
-
-# keep the window open to see error messages ...
-#
-timeout /t 300
