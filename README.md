@@ -42,6 +42,9 @@ Scripts provided 'as is'.
 
 ## Features
 
-Not sure if it should be called Features … the builder generates a weather (.wet) file with Autosave enabled for realroad feature,
-Setting realroad factor to 10, deleting Dedicated Server ini file in order to make DS generate it from Scratch (makes all tracks listed available)
-and does some informational modification to .dat file given on command line.
+Not sure if it should be called features … 
+
+* generating weather (.wet) file with autosave enabled for realroad feature
+* setting realroad factor to 10
+* deleting Dedicated Server ini file in order to make DS generate it from scratch (makes all tracks listed available)
+* informational modification to .dat file given on command line
