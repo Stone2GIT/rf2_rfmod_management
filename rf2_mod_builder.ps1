@@ -146,13 +146,13 @@ $RFMODFILENAME=modbuilder-$UNIXTIME.rfmod
 #
 # change some parameters in .dat file
 #
-(get-content $DATFILE) \
-	-replace "^Version=.*","Version=$CURRENTDATE" | set-content -Path "$DATFILE" -Encoding ASCII \
-	-replace "^Date=.*","Date=$UNIXTIME" | set-content -Path "$DATFILE" -Encoding ASCII \
-	-replace "^Location=.*","Location=$RF2ROOT\Packages\$RFMODFILENAME" | set-content -Path $DATFILE -Encoding ASCII \
-	-replace "^Author=.*","Author=Stone" | set-content -Path $DATFILE -Encoding ASCII \
-	-replace "^URL=.*","URL=simracingjustfair.org" | set-content -Path $DATFILE -Encoding ASCII \
-	-replace "^Desc=.*","Desc=rFactor 2 Dedicated Server Mod built with rF2_rfmod_builder.ps1" | set-content -Path $DATFILE -Encoding ASCII \
+(get-content $DATFILE) `
+	-replace "^Version=.*","Version=$CURRENTDATE" | set-content -Path "$DATFILE" -Encoding ASCII `
+	-replace "^Date=.*","Date=$UNIXTIME" | set-content -Path "$DATFILE" -Encoding ASCII `
+	-replace "^Location=.*","Location=$RF2ROOT\Packages\$RFMODFILENAME" | set-content -Path $DATFILE -Encoding ASCII `
+	-replace "^Author=.*","Author=Stone" | set-content -Path $DATFILE -Encoding ASCII `
+	-replace "^URL=.*","URL=simracingjustfair.org" | set-content -Path $DATFILE -Encoding ASCII `
+	-replace "^Desc=.*","Desc=rFactor 2 Dedicated Server Mod built with rF2_rfmod_builder.ps1" | set-content -Path $DATFILE -Encoding ASCII `
 	-replace "^Name=.*","Name=$RFMODNAME" | set-content -Path $DATFILE -Encoding ASCII
 
 # filename of the manifest
@@ -204,7 +204,7 @@ $ARGUMENTS=" +profile=$PLRPROFILE +rfm=""$RFMFILENAME"" +oneclick"
 
 cd $RF2ROOT
  write-host "`r`n`r`n=> Starting rF2 dedicated server"
-# start-process -FilePath "$RF2ROOT\bin64\rFactor2 Dedicated.exe" -ArgumentList $ARGUMENTS -NoNewWindow
+ start-process -FilePath "$RF2ROOT\bin64\rFactor2 Dedicated.exe" -ArgumentList $ARGUMENTS -NoNewWindow
 cd $CURRENTLOCATION
 
 # keep the window open to see error messages ...
