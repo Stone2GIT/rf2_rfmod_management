@@ -167,28 +167,33 @@ timeout /t 3 | out-null
 #
 write-host "`r`n`r`n=> Building RFMOD with dat entry "$CURRENTPACKAGE" from "$DATFILE
  $ARGUMENTS=" -c""$RF2ROOT"" -o""$RF2ROOT\Packages"" -b""$DATFILE"" $CURRENTPACKAGE "
- start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
+ $BUILDING_RFMOD=(start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait)
+ $BUILDING_RFMOD.WaitForExit()
 
-# deleting the Dedicated.ini file will make the DS create a new one with all tracks available
-#
-write-host "`r`n`r`n=> Deleting dedicated.ini file"
- $FILENAMEPART=(($RFMODFILENAME -replace '\.rfmod','') -split('\\') | select -last 1)
- remove-item -Path "$RF2ROOT\Userdata\$PLRPROFILE\Dedicated*.ini"
+ if ( $BUILDING_RFMOD.ExitCode -eq 0) {
 
-# give the filesystem cache a little time
-#
-timeout /t 3 | out-null
+  # deleting the Dedicated.ini file will make the DS create a new one with all tracks available
+  #
+  write-host "`r`n`r`n=> Deleting dedicated.ini file"
+   $FILENAMEPART=(($RFMODFILENAME -replace '\.rfmod','') -split('\\') | select -last 1)
+   remove-item -Path "$RF2ROOT\Userdata\$PLRPROFILE\Dedicated*.ini"
 
-# install mod package
-write-host "`r`n`r`n=> Installing RFMOD "$RFMODFILENAME
- $ARGUMENTS=" -p""$RF2ROOT\Packages"" -i""$RFMODFILENAME"" -c""$RF2ROOT"" "
- start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
+  # give the filesystem cache a little time
+  #
+  timeout /t 3 | out-null
+
+  # install mod package
+  write-host "`r`n`r`n=> Installing RFMOD "$RFMODFILENAME
+   $ARGUMENTS=" -p""$RF2ROOT\Packages"" -i""$RFMODFILENAME"" -c""$RF2ROOT"" "
+   start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait
  
-# start the dedicated server with the mod ...
-#
-$RFMFILENAME
-$ARGUMENTS=" +profile=$PLRPROFILE +rfm=""$RFMFILENAME"" +oneclick"
-cd $RF2ROOT
- write-host "`r`n`r`n=> Starting rF2 dedicated server"
- start-process -FilePath "$RF2ROOT\bin64\rFactor2 Dedicated.exe" -ArgumentList $ARGUMENTS -NoNewWindow
-cd $CURRENTLOCATION
+  # start the dedicated server with the mod ... 
+  #
+  $ARGUMENTS=" +profile=$PLRPROFILE +rfm=""$RFMFILENAME"" +oneclick"
+  cd $RF2ROOT
+   write-host "`r`n`r`n=> Starting rF2 dedicated server"
+   start-process -FilePath "$RF2ROOT\bin64\rFactor2 Dedicated.exe" -ArgumentList $ARGUMENTS -NoNewWindow
+  cd $CURRENTLOCATION 
+ } else {
+   write-host "Something went wrong building the rfmod package - not installing anything, not deleting anything, not starting DS"
+ } 
