@@ -43,9 +43,10 @@ if ($args[0]) {
 
 # shutdown server of PLRPROFILE
 #
-Start-Process -FilePath “powershell.exe” -ArgumentList “-File $RF2ROOT\rf2_server_shutdown.ps1 $PLRPROFILE” # -NoNewWindow
-write-host "=> Wait for server shutdown profile "$PLRPROFILE
-timeout /t 60
+$RF2UIPORT=((((gc $RF2USERDATA\$PLRPROFILE\$PLRPROFILE.JSON| select-string -Pattern "WebUI port""") -split ":")[1]) -replace ",","")
+Invoke-WebRequest -Uri http://127.0.0.1:$RF2UIPORT/rest/chat -Method POST -Body "Server shutdown in 30 seconds"
+ Start-Sleep -Seconds 30
+Invoke-WebRequest -Uri http://127.0.0.1:$RF2UIPORT/navigation/action/NAV_EXIT -Method POST
 
 # look if a .dat file was given on command line
 # => without a given dat file we cannot do anything
