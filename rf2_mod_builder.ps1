@@ -58,13 +58,20 @@ if (-not "$DATFILE") {
 # shutdown server of PLRPROFILE
 #
 $RF2UIPORT=((((gc $RF2USERDATA\$PLRPROFILE\$PLRPROFILE.JSON| select-string -Pattern "WebUI port""") -split ":")[1]) -replace ",","")
-Invoke-WebRequest -Uri http://127.0.0.1:$RF2UIPORT/rest/chat -Method POST -Body "Server shutdown in 30 seconds"
-write-host "`r`n`r`n=> Waiting 30 seconds for possible players leabing ..."
- Start-Sleep -Seconds 30
+$WEBREQUEST=start-process -FilePath "powershell" -ArgumentList "Invoke-WebRequest -Uri http://127.0.0.1:$RF2UIPORT/rest/chat -Method POST -Body 'Server will be shutdown for reconfiguration - please leave.'|out-null" -NoNewWindow -Wait -Passthru
 
-Invoke-WebRequest -Uri http://127.0.0.1:$RF2UIPORT/navigation/action/NAV_EXIT -Method POST
-write-host "`r`n`r`n=> Waiting another 30 seconds for server being shut down ..."
- Start-Sleep -Seconds 30
+if ($WEBREQUEST.ExitCode -eq 0) {
+ write-host "`r`n`r`n=> Waiting 30 seconds for possible players leaving ..."
+  Start-Sleep -Seconds 30
+  
+  # shutting down
+  #
+  Invoke-WebRequest -Uri http://127.0.0.1:$RF2UIPORT/navigation/action/NAV_EXIT -Method POST
+   write-host "`r`n`r`n=> Waiting another 30 seconds for server being shut down ..."
+   Start-Sleep -Seconds 30
+ } else { 
+  write-host "`r`n`r`n=> Seems there is not server running with $PLRPROFILE"
+ }
 
 # create settings folder in $PLRPROFILE and .wet file for track(s)
 #
