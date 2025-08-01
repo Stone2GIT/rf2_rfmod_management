@@ -43,7 +43,7 @@ if ($args[0]) {
 
 # shutdown server of PLRPROFILE
 #
-Start-Process -FilePath “powershell.exe” -ArgumentList “-File $RF2ROOT\rf2_server_shutdown.ps1 $PLRPROFILE” -NoNewWindow
+Start-Process -FilePath “powershell.exe” -ArgumentList “-File $RF2ROOT\rf2_server_shutdown.ps1 $PLRPROFILE” # -NoNewWindow
 write-host "=> Wait for server shutdown profile "$PLRPROFILE
 timeout /t 60
 
@@ -174,8 +174,9 @@ timeout /t 3 | out-null
 write-host "`r`n`r`n=> Building RFMOD with dat entry "$CURRENTPACKAGE" from "$DATFILE
  $ARGUMENTS=" -c""$RF2ROOT"" -o""$RF2ROOT\Packages"" -b""$DATFILE"" $CURRENTPACKAGE "
  $BUILDING_RFMOD=(start-process -FilePath "$RF2ROOT\bin64\ModMgr.exe" -ArgumentList $ARGUMENTS -NoNewWindow -Wait)
- 
- if ( $BUILDING_RFMOD.ExitCode -eq 0) {
+ $BUILDING_RFMOD.ExitCode
+
+ if ($BUILDING_RFMOD.ExitCode -eq 0) {
 
   # deleting the Dedicated.ini file will make the DS create a new one with all tracks available
   #
