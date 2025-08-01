@@ -36,7 +36,7 @@ if ($args[0]) {
    $CURRENTPACKAGE=(((gc $DATFILE | select-string -Pattern "CurPackage")[0]) -split("="))[1]
   } else {
    # if no profile is given as argument we will use default from variables.ps1
-   $PLRPROFILE=$ARGUMENT
+   if ( $ARGUMENT ) { $PLRPROFILE=$ARGUMENT }
   }
  }
 }
