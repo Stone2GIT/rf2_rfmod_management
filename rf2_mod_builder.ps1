@@ -41,13 +41,6 @@ if ($args[0]) {
  }
 }
 
-# shutdown server of PLRPROFILE
-#
-$RF2UIPORT=((((gc $RF2USERDATA\$PLRPROFILE\$PLRPROFILE.JSON| select-string -Pattern "WebUI port""") -split ":")[1]) -replace ",","")
-Invoke-WebRequest -Uri http://127.0.0.1:$RF2UIPORT/rest/chat -Method POST -Body "Server shutdown in 30 seconds"
- Start-Sleep -Seconds 30
-Invoke-WebRequest -Uri http://127.0.0.1:$RF2UIPORT/navigation/action/NAV_EXIT -Method POST
-
 # look if a .dat file was given on command line
 # => without a given dat file we cannot do anything
 #
@@ -61,6 +54,17 @@ if (-not "$DATFILE") {
   $CURRENTPACKAGE=(((gc $DATFILE | select-string -Pattern "CurPackage")[0]) -split("="))[1]
  }
 }
+
+# shutdown server of PLRPROFILE
+#
+$RF2UIPORT=((((gc $RF2USERDATA\$PLRPROFILE\$PLRPROFILE.JSON| select-string -Pattern "WebUI port""") -split ":")[1]) -replace ",","")
+Invoke-WebRequest -Uri http://127.0.0.1:$RF2UIPORT/rest/chat -Method POST -Body "Server shutdown in 30 seconds"
+write-host "`r`n`r`n=> Waiting 30 seconds for possible players leabing ..."
+ Start-Sleep -Seconds 30
+
+Invoke-WebRequest -Uri http://127.0.0.1:$RF2UIPORT/navigation/action/NAV_EXIT -Method POST
+write-host "`r`n`r`n=> Waiting another 30 seconds for server being shut down ..."
+ Start-Sleep -Seconds 30
 
 # create settings folder in $PLRPROFILE and .wet file for track(s)
 #
