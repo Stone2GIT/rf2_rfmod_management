@@ -66,7 +66,7 @@ if ($WEBREQUEST.ExitCode -eq 0) {
   
   # shutting down
   #
-  Invoke-WebRequest -Uri http://127.0.0.1:$RF2UIPORT/navigation/action/NAV_EXIT -Method POST
+  $WEBREQUEST=start-process -FilePath "powershell" -ArgumentList "Invoke-WebRequest -Uri http://127.0.0.1:$RF2UIPORT/navigation/action/NAV_EXIT -Method POST | out-null" -NoNewWindow -Wait -Passthru
    write-host "`r`n`r`n=> Waiting another 30 seconds for server being shut down ..."
    Start-Sleep -Seconds 30
  } else { 
