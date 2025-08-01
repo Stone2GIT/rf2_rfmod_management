@@ -43,7 +43,7 @@ if ($args[0]) {
 
 # shutdown server of PLRPROFILE
 #
-Start-Process -FilePath “powershell.exe” -ArgumentList “-File $RF2ROOT\rf2_server_shutdown.ps1 $PLRPROFILE”
+Start-Process -FilePath “powershell.exe” -ArgumentList “-File $RF2ROOT\rf2_server_shutdown.ps1 $PLRPROFILE” -NoNewWindow  -Wait
 
 # look if a .dat file was given on command line
 # => without a given dat file we cannot do anything
