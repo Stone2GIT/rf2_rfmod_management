@@ -1,11 +1,11 @@
 [Package]
-Name=modbuilder-1753603152
+Name=modbuilder-1753689673
 Type=0
-Version=2507.27
+Version=2507.28
 BaseVersion=
 MinVersion=
 Author=Stone
-Date=1753603152
+Date=1753689673
 ID=AAA9999
 URL=simracingjustfair.org
 Desc=rFactor 2 Dedicated Server Mod built with rF2_rfmod_builder
@@ -14,10 +14,10 @@ Origin=0
 Flags=0
 CurLocation=0
 NumLocations=1
-Location=C:\Users\rfactor2\rf2ds\Packages\modbuilder-1753603152.rfmod
+Location=C:\Users\rfactor2\rf2ds\Packages\modbuilder-1753689673.rfmod
 CurRFM=0
 NumRFM=1
-RFM=C:\Users\rfactor2\Appdata\roaming\~mastemp\modbuilder-1753603152.mas
+RFM=C:\Users\rfactor2\Appdata\roaming\~mastemp\modbuilder-1753689673.mas
 NumTrackFiles=3
 Track="Barcelona2021 v1.23,0" "Barcelona 2021,1"
 Track="Road_Atlanta_2022 v1.0,0" "Road Atlanta GP Course,1"
