@@ -135,7 +135,7 @@ foreach($TRACK in $TRACKS) {
  }
 }
 
-# increase rubber build up
+# increase rubber buildup
 #
 write-host "`r`n`r`n=> Setting RealRoadTimeScale"
 (gc $RF2ROOT\UserData\$PLRPROFILE\$PLRPROFILE.json) -replace '"RealRoadTimeScalePractice":.*','"RealRoadTimeScalePractice":10' | set-content -Path $RF2ROOT\UserData\$PLRPROFILE\$PLRPROFILE.json -Encoding ASCII
@@ -146,8 +146,9 @@ write-host "`r`n`r`n=> Building mod package for profile "$PLRPROFILE" using .dat
 
 # generate filename for the rfmod file
 #
-$RFMODNAME="modbuilder-$UNIXTIME"
-$RFMODFILENAME="modbuilder-$UNIXTIME.rfmod"
+$CURRENTDATEWODOT=(($CURRENTDATE) -replace ("\.",""))
+$RFMODNAME="srjf-modbuilder-$UNIXTIME-$CURRENTDATEWODOT"
+$RFMODFILENAME="srjf-modbuilder-$UNIXTIME-$CURRENTDATEWODOT.rfmod"
 
 # filename of the manifest
 #
