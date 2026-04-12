@@ -58,7 +58,7 @@ if (-not "$DATFILE") {
 # shutdown server of PLRPROFILE
 #
 $RF2UIPORT=((((gc $RF2USERDATA\$PLRPROFILE\$PLRPROFILE.JSON| select-string -Pattern "WebUI port""") -split ":")[1]) -replace ",","")
-$WEBREQUEST=start-process -FilePath "powershell" -ArgumentList "Invoke-WebRequest -Uri http://127.0.0.1:$RF2UIPORT/rest/chat -Method POST -Body 'Server will be shutdown for reconfiguration - please leave.'|out-null" -NoNewWindow -Wait -Passthru
+$WEBREQUEST=start-process -FilePath "powershell" -ArgumentList "Invoke-WebRequest -Uri http://127.0.0.1:$RF2UIPORT/rest/chat -UseBasicParsing -Method POST -Body 'Server will be shutdown for reconfiguration - please leave.'|out-null" -NoNewWindow -Wait -Passthru
 
 if ($WEBREQUEST.ExitCode -eq 0) {
  write-host "`r`n`r`n=> Waiting 30 seconds for possible players leaving ..."
@@ -66,7 +66,7 @@ if ($WEBREQUEST.ExitCode -eq 0) {
   
   # shutting down
   #
-  $WEBREQUEST=start-process -FilePath "powershell" -ArgumentList "Invoke-WebRequest -Uri http://127.0.0.1:$RF2UIPORT/navigation/action/NAV_EXIT -Method POST | out-null" -NoNewWindow -Wait -Passthru
+  $WEBREQUEST=start-process -FilePath "powershell" -ArgumentList "Invoke-WebRequest -Uri http://127.0.0.1:$RF2UIPORT/navigation/action/NAV_EXIT -UseBasicParsing -Method POST | out-null" -NoNewWindow -Wait -Passthru
    write-host "`r`n`r`n=> Waiting another 30 seconds for server being shut down ..."
    Start-Sleep -Seconds 30
  } else { 
@@ -208,7 +208,7 @@ write-host "`r`n`r`n=> Building RFMOD with dat entry "$CURRENTPACKAGE" from "$DA
  
   # start the dedicated server with the mod ... 
   #
-  $ARGUMENTS=" +profile=$PLRPROFILE +rfm=""$RFMFILENAME"" +oneclick"
+  $ARGUMENTS=" +profile=$PLRPROFILE +rfm=""$RFMFILENAME"" +oneclick +trace=5 +traceflush"
   cd $RF2ROOT
    write-host "`r`n`r`n=> Starting rF2 dedicated server"
    start-process -FilePath "$RF2ROOT\bin64\rFactor2 Dedicated.exe" -ArgumentList $ARGUMENTS -NoNewWindow
