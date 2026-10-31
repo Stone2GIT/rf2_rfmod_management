@@ -1,20 +1,20 @@
 //[[gMa1.002f (c)2016    ]] [[            ]]
 [Weather Info]
 abstractnodes=1
-RealRoadTD="user:autosave.rrbin"
-RealRoadP1="user:autosave.rrbin"
-RealRoadP2="natural"
-RealRoadP3="natural"
-RealRoadP4="natural"
-RealRoadQ1="natural"
-RealRoadQ2="natural"
-RealRoadQ3="natural"
-RealRoadQ4="natural"
-RealRoadWU="natural"
-RealRoadR1="natural"
-RealRoadR2="natural"
-RealRoadR3="natural"
-RealRoadR4="natural"
+RealRoadTD="user:AutoSave.rrbin"
+RealRoadP1="user:AutoSave.rrbin"
+RealRoadP2="user:AutoSave.rrbin"
+RealRoadP3="user:AutoSave.rrbin"
+RealRoadP4="user:AutoSave.rrbin"
+RealRoadQ1="user:AutoSave.rrbin"
+RealRoadQ2="user:AutoSave.rrbin"
+RealRoadQ3="user:AutoSave.rrbin"
+RealRoadQ4="user:AutoSave.rrbin"
+RealRoadWU="user:AutoSave.rrbin"
+RealRoadR1="user:AutoSave.rrbin"
+RealRoadR2="user:AutoSave.rrbin"
+RealRoadR3="user:AutoSave.rrbin"
+RealRoadR4="user:AutoSave.rrbin"
 
 [Practice Info]
 StartTime=(540)

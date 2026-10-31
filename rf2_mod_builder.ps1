@@ -36,7 +36,7 @@ if ($args[0]) {
    $CURRENTPACKAGE=(((gc $DATFILE | select-string -Pattern "CurPackage")[0]) -split("="))[1]
   } else {
    # if no profile is given as argument we will use default from variables.ps1
-   $PLRPROFILE=$ARGUMENT
+   if ( $ARGUMENT ) { $PLRPROFILE=$ARGUMENT }
   }
  }
 }
@@ -58,13 +58,20 @@ if (-not "$DATFILE") {
 # shutdown server of PLRPROFILE
 #
 $RF2UIPORT=((((gc $RF2USERDATA\$PLRPROFILE\$PLRPROFILE.JSON| select-string -Pattern "WebUI port""") -split ":")[1]) -replace ",","")
-Invoke-WebRequest -Uri http://127.0.0.1:$RF2UIPORT/rest/chat -Method POST -Body "Server shutdown in 30 seconds"
-write-host "`r`n`r`n=> Waiting 30 seconds for possible players leabing ..."
- Start-Sleep -Seconds 30
+$WEBREQUEST=start-process -FilePath "powershell" -ArgumentList "Invoke-WebRequest -Uri http://127.0.0.1:$RF2UIPORT/rest/chat -UseBasicParsing -Method POST -Body 'Server will be shutdown for reconfiguration - please leave.'|out-null" -NoNewWindow -Wait -Passthru
 
-Invoke-WebRequest -Uri http://127.0.0.1:$RF2UIPORT/navigation/action/NAV_EXIT -Method POST
-write-host "`r`n`r`n=> Waiting another 30 seconds for server being shut down ..."
- Start-Sleep -Seconds 30
+if ($WEBREQUEST.ExitCode -eq 0) {
+ write-host "`r`n`r`n=> Waiting 30 seconds for possible players leaving ..."
+  Start-Sleep -Seconds 30
+  
+  # shutting down
+  #
+  $WEBREQUEST=start-process -FilePath "powershell" -ArgumentList "Invoke-WebRequest -Uri http://127.0.0.1:$RF2UIPORT/navigation/action/NAV_EXIT -UseBasicParsing -Method POST | out-null" -NoNewWindow -Wait -Passthru
+   write-host "`r`n`r`n=> Waiting another 30 seconds for server being shut down ..."
+   Start-Sleep -Seconds 30
+ } else { 
+  write-host "`r`n`r`n=> Seems there is not server running with $PLRPROFILE"
+ }
 
 # create settings folder in $PLRPROFILE and .wet file for track(s)
 #
@@ -128,7 +135,7 @@ foreach($TRACK in $TRACKS) {
  }
 }
 
-# increase rubber build up
+# increase rubber buildup
 #
 write-host "`r`n`r`n=> Setting RealRoadTimeScale"
 (gc $RF2ROOT\UserData\$PLRPROFILE\$PLRPROFILE.json) -replace '"RealRoadTimeScalePractice":.*','"RealRoadTimeScalePractice":10' | set-content -Path $RF2ROOT\UserData\$PLRPROFILE\$PLRPROFILE.json -Encoding ASCII
@@ -139,8 +146,9 @@ write-host "`r`n`r`n=> Building mod package for profile "$PLRPROFILE" using .dat
 
 # generate filename for the rfmod file
 #
-$RFMODNAME="modbuilder-$UNIXTIME"
-$RFMODFILENAME="modbuilder-$UNIXTIME.rfmod"
+$CURRENTDATEWODOT=(($CURRENTDATE) -replace ("\.",""))
+$RFMODNAME="srjf-modbuilder-$UNIXTIME-$CURRENTDATEWODOT"
+$RFMODFILENAME="srjf-modbuilder-$UNIXTIME-$CURRENTDATEWODOT.rfmod"
 
 # filename of the manifest
 #
@@ -200,7 +208,7 @@ write-host "`r`n`r`n=> Building RFMOD with dat entry "$CURRENTPACKAGE" from "$DA
  
   # start the dedicated server with the mod ... 
   #
-  $ARGUMENTS=" +profile=$PLRPROFILE +rfm=""$RFMFILENAME"" +oneclick"
+  $ARGUMENTS=" +profile=$PLRPROFILE +rfm=""$RFMFILENAME"" +oneclick +trace=5 +traceflush"
   cd $RF2ROOT
    write-host "`r`n`r`n=> Starting rF2 dedicated server"
    start-process -FilePath "$RF2ROOT\bin64\rFactor2 Dedicated.exe" -ArgumentList $ARGUMENTS -NoNewWindow

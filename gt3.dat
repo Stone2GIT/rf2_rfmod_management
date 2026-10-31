@@ -1,0 +1,34 @@
+[Package]
+Name=srjf-modbuilder-1787409249-260822
+Type=0
+Version=2608.22
+BaseVersion=
+MinVersion=
+Author=Stone
+Date=1787409249
+ID=AAA9999
+URL=simracingjustfair.org
+Desc=rFactor 2 Dedicated Server Mod built with rF2_rfmod_builder
+Category=0
+Origin=0
+Flags=0
+CurLocation=0
+NumLocations=1
+Location=C:\Users\rfactor2\rf2ds\Packages\srjf-modbuilder-1787409249-260822.rfmod
+CurRFM=0
+NumRFM=1
+RFM=C:\Users\rfactor2\Appdata\roaming\~mastemp\srjf-modbuilder-1787409249-260822.mas
+NumTrackFiles=1
+Track="SpaFrancorchamps_2020 v1.43,0" "Spa-Francorchamps,0" "Spa-Francorchamps Endurance,1"
+NumVehicleFiles=5
+Vehicle="AstonMartin_Vantage_GTE_2019 vSpa26.00,0" "Baggies CZ eMotorsport 2012 #19,1"
+Vehicle="BMW_M8_GTE_2018 vSpa26.00,0" "Force Slovakia #51,1"
+Vehicle="Corvette_C8R_GTE_2020 vSpa26.00,0" "SIMCO #43,1"
+Vehicle="Ferrari_488_GTE_2020 vSpa26.00,0" "TeamRGPL GT #7,1"
+Vehicle="Porsche_991RSR_GTE_2017 vSpa26.00,0" "Caspian Motorsport #1,1"
+NumOtherFiles=0
+rFmFile=C:\Users\rfactor2\AppData\Roaming\~MASTEMP\default.rfm
+IconFile=C:\Users\rfactor2\AppData\Roaming\~MASTEMP\icon.dds
+SmallIconFile=C:\Users\rfactor2\AppData\Roaming\~MASTEMP\smicon.dds
+
+CurPackage=0
